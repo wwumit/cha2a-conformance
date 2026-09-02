@@ -13,7 +13,7 @@ did:cha2a 方法规范的 conformance 套件——**把规范 §8"声称有 test
 | 负向向量占比 | >1/3（篡改/伪造/非法/边界必须 REJECT）|
 | 确定性 | 生成器重跑字节一致（git diff 为空）+ MANIFEST.sha256 钉住 |
 | 双实现互锁 | Python（cryptography）+ Node（node:crypto）独立判卷，parity 一致 |
-| CI | ✅ GitHub Actions（push/PR 自动跑：双验证器+parity+MANIFEST+计数防漂移）|
+| CI | ✅ GitHub Actions（push/PR 自动跑：双验证器+parity 三断言+MANIFEST+计数防漂移+跨仓版本一致性+规范→向量反向覆盖）|
 
 ## 用法
 
@@ -59,14 +59,26 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 
 ## notCovered（诚实，详见 conformance.json）
 
-- normalization：**已覆盖**（§3.4 Identifier normalization，方案 C case-preserving + byte-exact，6 个向量）
 - §4.6 L4 生态状态（需 ≥2 独立真实 verifier，fixtures 证明不了）
-- §4.2.1 Federation / §4.7 Runtime attestation（规范超范围/reserved）
-- §3.3 号段真实运营（无真实号段；live 只验证机制）
-- §4.6 disclosure consistency（L4 额外条件未模拟）
+- §4.2.1 Federation（规范明确超范围）
+- §4.7 Runtime attestation（reserved，无运行行为）
+- §3.3 号段真实运营（无真实号段；live 只验证机制，grant 记录可核验）
+- §4.6 disclosure consistency（L4 额外条件，场景未模拟）
+- §6 Security Considerations（实现侧安全要求：密钥轮换/fail-closed/撤销消费——离线协议向量无法证明，属实现核对 B 项）
+- §7 Privacy Considerations（实现侧隐私要求——离线协议向量无法证明，属实现核对 B 项）
+
+## 机器强制（L2，防"可被误读为绿"的路径）
+
+- **parity 三断言**：验证器 rc≠0 / verdicts 为空 / 判卷集合不等或 != fixtures 实有——任一 → 红
+  （堵死"什么都没验却报全部通过"的假绿路径）
+- **跨仓版本一致性**（check_spec_version.py）：规范仓库头部版本 == conformance.json spec.version，
+  不一致即红——conformance 验证的必须是人读的那份规范
+- **规范→向量反向覆盖**（check_spec_coverage.py）：规范含 MUST/SHOULD 的条款区块必须映射到
+  向量（fixtures spec.section）或 notCovered 声明，否则红——不允许"规范有要求但既无向量也无声明"
+- 拉取规范依赖网络（20s 超时 + 失败 exit 1，fail-closed 不放行）
 
 ## 纪律
 
 - 所有密钥 TEST-ONLY（vectors/，标注，绝不用于生产）
 - 单验证器阶段不声称"双实现验证"——本套件已双实现互锁（Python+Node）
-- 改向量必须重生成 MANIFEST；声称计数必须等于 fixture 实有
+- 改向量必须重生成 MANIFEST；声称计数必须等于 fixture 实有；notCovered 条数与 conformance.json 一致

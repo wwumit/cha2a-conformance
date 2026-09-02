@@ -44,6 +44,12 @@ rows = re.findall(r"\|\s*§[^|\n]+\|\s*(\d+)\s*\|", readme)
 if rows and sum(int(r) for r in rows) != n:
     fail(f"README 覆盖矩阵合计 {sum(int(r) for r in rows)} != 实有 {n}（逐行 {rows}）")
 
+# 3.5 notCovered 条数一致（README 声称 vs conformance.json 实有）
+conf_nc = len(conf.get("notCovered", []))
+readme_nc = len(re.findall(r"^- §", readme, re.M))
+if conf_nc != readme_nc:
+    fail(f"notCovered 条数不一致：conformance.json={conf_nc} != README 列表={readme_nc}")
+
 # 4. MANIFEST 条目数
 vec_n = len([x for x in os.listdir(os.path.join(ROOT, "vectors")) if x.endswith(".json")])
 try:
