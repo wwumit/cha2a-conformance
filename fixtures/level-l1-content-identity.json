@@ -1,0 +1,33 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/level-l1-content-identity",
+  "description": "content fingerprint → L1",
+  "fixtureType": "level",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.6"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ],
+    "registeredVerifiers": [
+      "did:cha2a:verifier:verifier_a",
+      "did:cha2a:verifier:verifier_b"
+    ]
+  },
+  "input": {
+    "metadata": {
+      "contentIdentity": "sha256:abc123"
+    },
+    "verifiedBy": [],
+    "revoked": false
+  },
+  "expected": {
+    "verdict": "ACCEPT",
+    "level": 1
+  }
+}

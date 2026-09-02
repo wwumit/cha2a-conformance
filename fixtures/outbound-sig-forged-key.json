@@ -1,0 +1,27 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/outbound-sig-forged-key",
+  "description": "伪造密钥签名，验签失败",
+  "fixtureType": "outbound-sig",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.5"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:agent_conformance_test_001#key-1",
+    "message": "cha2a conformance outbound call 001",
+    "signatureHex": "88bc35db0f39d01feb20807a0453461e9139487cf2f9d059e89bbec13696f4f2fe69934643ed2460b02dbfe0dc7deb6d84469c0a92d45ca02b48ca27afcdfc0f",
+    "publicKeyHex": "01c98fa259470f425e5e4e52e386aabeea46943ce591a849fded0830ce5630ee"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

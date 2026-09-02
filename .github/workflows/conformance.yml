@@ -1,0 +1,33 @@
+name: conformance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 安装依赖
+        run: pip install cryptography
+      - name: Python 验证器（含 MANIFEST 内容校验）
+        run: python3 verifiers/python/verify.py fixtures --manifest MANIFEST.sha256
+      - name: Node 验证器（含 MANIFEST 内容校验）
+        run: node verifiers/node/verify.mjs fixtures --manifest MANIFEST.sha256
+      - name: parity 双实现互锁
+        run: python3 scripts/parity.py
+      - name: MANIFEST 完整性
+        run: sha256sum -c MANIFEST.sha256
+      - name: 计数/JSON 防漂移（声称=实有）
+        run: python3 scripts/check_consistency.py

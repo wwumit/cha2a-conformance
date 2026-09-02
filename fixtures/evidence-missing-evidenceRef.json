@@ -1,0 +1,28 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/evidence-missing-evidenceRef",
+  "description": "缺 evidenceRef REJECT",
+  "fixtureType": "evidence",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.6"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ]
+  },
+  "input": {
+    "subject": "did:cha2a:agent:x",
+    "predicateType": "https://cha2a.org/predicate/identity-anchor/v1",
+    "verifier": "did:cha2a:verifier:verifier_a",
+    "result": "passed",
+    "checkedAt": "2026-08-30T00:00:00Z"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

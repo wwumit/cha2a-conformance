@@ -1,0 +1,46 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/discovery-valid",
+  "description": "discovery 文档结构完整",
+  "fixtureType": "discovery",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§5.2"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ]
+  },
+  "input": {
+    "document": {
+      "registryDid": "did:cha2a:registry:compliancehub.cn",
+      "version": "1.0",
+      "supportedMethods": [
+        "did:cha2a"
+      ],
+      "capabilities": [
+        "trust-proof",
+        "trust-lookup",
+        "revocation",
+        "deactivation",
+        "evidence",
+        "phone"
+      ],
+      "publicKeys": [
+        {
+          "algorithm": "Ed25519",
+          "status": "signing",
+          "publicKeyHex": "ce58b4f32f3586bbb9f79837e9e3c30c4e85b2af0318d93042408ec108e6de93",
+          "keyId": "did:cha2a:registry:compliancehub.cn#key-1"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "ACCEPT"
+  }
+}

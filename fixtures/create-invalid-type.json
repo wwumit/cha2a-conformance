@@ -1,0 +1,31 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/create-invalid-type",
+  "description": "未注册类型 REJECT",
+  "fixtureType": "create",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.1"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ],
+    "registeredResources": [
+      "did:cha2a:agent:known_agent",
+      "did:cha2a:skill:known_skill",
+      "did:cha2a:org:known_org"
+    ]
+  },
+  "input": {
+    "type": "not_a_type",
+    "id": "x",
+    "metadata": {}
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

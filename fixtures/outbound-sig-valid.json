@@ -1,0 +1,27 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/outbound-sig-valid",
+  "description": "agent-a 真实签名，验签通过",
+  "fixtureType": "outbound-sig",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.5"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:agent_conformance_test_001#key-1",
+    "message": "cha2a conformance outbound call 001",
+    "signatureHex": "d7b480a9a96c15272aaf2a8a70372d4d35bcb61884bad0177b528fb309d5e70fe84ac512e1082a27ebeb251c13e5035a12de52bc6cfe7601d828305836e8ea0c",
+    "publicKeyHex": "01c98fa259470f425e5e4e52e386aabeea46943ce591a849fded0830ce5630ee"
+  },
+  "expected": {
+    "verdict": "ACCEPT"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "role": "agent-a",
+  "keyId": "did:cha2a:agent:agent_conformance_test_001#key-1",
+  "algorithm": "Ed25519",
+  "privateKeyHex": "946bed2ce116b04afff0651cc6fd1e04e996fd2f56ffb9ba19a83e07ca9fb9a4",
+  "publicKeyHex": "01c98fa259470f425e5e4e52e386aabeea46943ce591a849fded0830ce5630ee",
+  "note": "TEST-ONLY conformance keypair; never used in production"
+}

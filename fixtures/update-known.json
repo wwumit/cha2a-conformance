@@ -1,0 +1,32 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/update-known",
+  "description": "更新已注册 ACCEPT",
+  "fixtureType": "update",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.3"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ],
+    "registeredResources": [
+      "did:cha2a:agent:known_agent",
+      "did:cha2a:skill:known_skill",
+      "did:cha2a:org:known_org"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:known_agent",
+    "metadata": {
+      "name": "updated"
+    }
+  },
+  "expected": {
+    "verdict": "ACCEPT"
+  }
+}

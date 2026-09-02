@@ -1,0 +1,8 @@
+{
+  "role": "verifier-b",
+  "keyId": "did:cha2a:verifier:verifier_conformance_test_002#key-1",
+  "algorithm": "Ed25519",
+  "privateKeyHex": "3f1ac476b9a90da079357256ac323814b8fb680c997f2da63d71b3d35d64df14",
+  "publicKeyHex": "60855c95952444fabfba99d7df69e92a7a6b9f3fad48c738a059d44ec98d3693",
+  "note": "TEST-ONLY conformance keypair; never used in production"
+}

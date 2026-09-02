@@ -1,0 +1,29 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/evidence-invalid-predicate-subject",
+  "description": "predicate 与 subject 类型不匹配 REJECT",
+  "fixtureType": "evidence",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.6"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:compliancehub.cn"
+    ]
+  },
+  "input": {
+    "subject": "did:cha2a:agent:x",
+    "predicateType": "https://cha2a.org/predicate/number-range-grant/v1",
+    "verifier": "did:cha2a:verifier:verifier_a",
+    "result": "passed",
+    "checkedAt": "2026-08-30T00:00:00Z",
+    "evidenceRef": "https://evidence.example.com/ev"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}
