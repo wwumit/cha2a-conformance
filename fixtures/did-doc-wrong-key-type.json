@@ -12,7 +12,7 @@
   ],
   "verifierState": {
     "trustedRegistries": [
-      "did:cha2a:registry:compliancehub.cn"
+      "did:cha2a:registry:conformance-test"
     ]
   },
   "input": {
@@ -26,7 +26,7 @@
         {
           "id": "x#key",
           "type": "RSAVerificationKey2018",
-          "controller": "did:cha2a:registry:compliancehub.cn"
+          "controller": "did:cha2a:registry:conformance-test"
         }
       ],
       "authentication": [

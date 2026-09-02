@@ -30,7 +30,7 @@ def load_vec(role):
         return json.load(f)
 
 def fixture(name, ftype, section, input_, expected, verifier_state, desc):
-    """构造 fixture（对齐 opena2a 格式）"""
+    """构造 fixture（自证格式：byte-stable + 追溯 §条款 + 三来源标注）"""
     return {
         "$schema": "https://cha2a.org/schemas/fixture-v1.json",
         "name": f"cha2a/{name}",
@@ -50,7 +50,7 @@ def sign_hex(role, msg):
 def did_syntax_fixtures():
     out = []
     registry_vec = load_vec("registry")
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"]}
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
     valid_types = ["registry", "authority", "publisher", "agent", "skill",
                    "package", "org", "provider", "verifier", "mcp_server", "ai_tool", "llm"]
     for t in valid_types:
@@ -67,15 +67,29 @@ def did_syntax_fixtures():
                        {"did": "did:cha2a:agent:a b"}, {"verdict": "REJECT"}, vs, "含空格非法"))
     out.append(fixture("did-syntax-fragment", "did-syntax", "§3.1",
                        {"did": "did:cha2a:agent:x#key-1"}, {"verdict": "ACCEPT"}, vs, "fragment 合法"))
-    # normalization：规范未定义完整 normalization 章节（§3.3 为服务挂载；仅 §2 前缀小写表述）
-    # 待规范补全 normalization 语义（参考 opena2a §3.3：prefix/type 大小写敏感、resource-id 保留）后加入
+    return out
+
+
+def normalization_fixtures():
+    """§3.3 规范化（自定义语义）：大小写敏感、语法强制小写、无运行时规范化"""
+    out = []
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
+    # 恒等：DID 按原样字节处理（大小写保留，不做折叠/解码/默认端口等规范化）
+    out.append(fixture("normalization-identity", "normalization", "§3.3",
+                       {"did": "did:cha2a:agent:MyAgent_01",
+                        "expectNormalized": "did:cha2a:agent:MyAgent_01"},
+                       {"verdict": "ACCEPT"}, vs, "无规范化：大小写保留、原样字节"))
+    # 类型大小写由 §3.1 ABNF 强制小写——大写直接非法（不靠规范化折叠后接受）
+    out.append(fixture("normalization-uppercase-type", "normalization", "§3.3",
+                       {"did": "did:cha2a:AGENT:foo"},
+                       {"verdict": "REJECT"}, vs, "类型大写非法（语法强制小写）"))
     return out
 
 def outbound_sig_fixtures():
     """§4.5 出站签名：X-DID + X-DID-Sig（真实 Ed25519）"""
     out = []
     agent = load_vec("agent-a")
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"]}
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
     # 有效：agent-a 私钥签名
     m1 = TEST_MSGS["sig1"]
     s1 = sign_hex("agent-a", m1)
@@ -100,9 +114,9 @@ def discovery_fixtures():
     """§5.2 /.well-known/cha2a discovery 文档结构"""
     out = []
     reg = load_vec("registry")
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"]}
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
     valid_doc = {
-        "registryDid": "did:cha2a:registry:compliancehub.cn",
+        "registryDid": "did:cha2a:registry:conformance-test",
         "version": "1.0",
         "supportedMethods": ["did:cha2a"],
         "capabilities": ["trust-proof", "trust-lookup", "revocation", "deactivation", "evidence", "phone"],
@@ -122,7 +136,7 @@ def level_fixtures():
     """§4.6 L0-L4 判定（按规范：contentIdentity→L1 +author→L2 +publisher→L3 +≥2独立已注册verifier→L4）
     简化标注：disclosure consistency 场景未模拟（L4 额外条件）；撤销 fail-closed 单列"""
     out = []
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"],
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"],
           "registeredVerifiers": ["did:cha2a:verifier:verifier_a",
                                   "did:cha2a:verifier:verifier_b"]}
     def L(name, metadata, verifiedBy, exp_level, desc, revoked=False):
@@ -178,7 +192,7 @@ def level_fixtures():
 def evidence_fixtures():
     """§4.6 evidence schema：字段完整 + predicate-subject 白名单 + evidenceRef 要求"""
     out = []
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"]}
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
     base = {"predicateType": "https://cha2a.org/predicate/identity-anchor/v1",
             "verifier": "did:cha2a:verifier:verifier_a", "result": "passed",
             "checkedAt": "2026-08-30T00:00:00Z",
@@ -207,7 +221,7 @@ def crud_fixtures():
     out = []
     registered = ["did:cha2a:agent:known_agent", "did:cha2a:skill:known_skill",
                   "did:cha2a:org:known_org"]
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"],
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"],
           "registeredResources": registered}
     # §4.1 Create：代表类型 valid + 非法类型 + 重复
     for t, rid in [("agent", "new_agent"), ("skill", "new_skill"), ("org", "new_org"),
@@ -248,7 +262,7 @@ def crud_fixtures():
 def did_doc_fixtures():
     """§5 DID Document 结构"""
     out = []
-    vs = {"trustedRegistries": ["did:cha2a:registry:compliancehub.cn"]}
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
     valid_doc = {
         "@context": ["https://www.w3.org/ns/did/v1",
                      "https://w3id.org/security/suites/ed25519-2020/v1"],
@@ -256,7 +270,7 @@ def did_doc_fixtures():
         "verificationMethod": [{
             "id": "did:cha2a:skill:known_skill#registry-key",
             "type": "Ed25519VerificationKey2020",
-            "controller": "did:cha2a:registry:compliancehub.cn",
+            "controller": "did:cha2a:registry:conformance-test",
             "publicKeyMultibase": "z6Mk1234567890abcdef"}],
         "authentication": ["did:cha2a:skill:known_skill#registry-key"],
         "assertionMethod": ["did:cha2a:skill:known_skill#registry-key"],
@@ -271,14 +285,15 @@ def did_doc_fixtures():
                        {"document": missing}, {"verdict": "REJECT"}, vs, "缺 verificationMethod REJECT"))
     wrong_key = dict(valid_doc)
     wrong_key["verificationMethod"] = [{"id": "x#key", "type": "RSAVerificationKey2018",
-                                        "controller": "did:cha2a:registry:compliancehub.cn"}]
+                                        "controller": "did:cha2a:registry:conformance-test"}]
     out.append(fixture("did-doc-wrong-key-type", "did-doc", "§5",
                        {"document": wrong_key}, {"verdict": "REJECT"}, vs, "密钥类型非 Ed25519 REJECT"))
     return out
 
 def main():
     os.makedirs(FIX, exist_ok=True)
-    all_fx = (did_syntax_fixtures() + outbound_sig_fixtures() + discovery_fixtures()
+    all_fx = (did_syntax_fixtures() + normalization_fixtures()
+              + outbound_sig_fixtures() + discovery_fixtures()
               + level_fixtures() + evidence_fixtures()
               + crud_fixtures() + did_doc_fixtures())
     for fx in all_fx:

@@ -1,6 +1,6 @@
 {
   "role": "registry",
-  "keyId": "did:cha2a:registry:compliancehub.cn#key-1",
+  "keyId": "did:cha2a:registry:conformance-test#key-1",
   "algorithm": "Ed25519",
   "privateKeyHex": "ceed24ba6ba5e0278e001fd856f93349521595875f765cd7408f8af5f1376770",
   "publicKeyHex": "ce58b4f32f3586bbb9f79837e9e3c30c4e85b2af0318d93042408ec108e6de93",

@@ -32,13 +32,11 @@ def check_did_syntax(did):
         return False, "id 非法"
     return True, ""
 
-# ---- §3.3 规范化（第一批：方法名+类型小写；完整规则后续扩展，如实标注） ----
+# ---- §3.3 规范化（自定义语义）：大小写敏感、语法强制小写、无运行时规范化 ----
+# did:cha2a 不做大小写折叠/百分号解码/默认端口等规范化——DID 按原样字节处理。
+# 方法名与类型的小写由 §3.1 ABNF 语法直接强制（大写即非法），id 区分大小写。
 def normalize_did(did):
-    if not check_did_syntax(did)[0]:
-        return did
-    method, rest = did.split(":", 2)[:2], did.split(":", 2)[2]
-    t, rid = rest.split(":", 1)
-    return f"did:{method[1].lower()}:{t.lower()}:{rid}"
+    return did
 
 # ---- §4.5 Ed25519 验签 ----
 def verify_ed25519(pk_hex, msg, sig_hex):

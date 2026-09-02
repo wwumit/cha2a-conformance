@@ -12,12 +12,12 @@
   ],
   "verifierState": {
     "trustedRegistries": [
-      "did:cha2a:registry:compliancehub.cn"
+      "did:cha2a:registry:conformance-test"
     ]
   },
   "input": {
     "document": {
-      "registryDid": "did:cha2a:registry:compliancehub.cn",
+      "registryDid": "did:cha2a:registry:conformance-test",
       "version": "1.0",
       "supportedMethods": [
         "did:cha2a"
@@ -35,7 +35,7 @@
           "algorithm": "Ed25519",
           "status": "signing",
           "publicKeyHex": "ce58b4f32f3586bbb9f79837e9e3c30c4e85b2af0318d93042408ec108e6de93",
-          "keyId": "did:cha2a:registry:compliancehub.cn#key-1"
+          "keyId": "did:cha2a:registry:conformance-test#key-1"
         }
       ]
     }

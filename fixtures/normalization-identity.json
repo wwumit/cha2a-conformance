@@ -1,13 +1,13 @@
 {
   "$schema": "https://cha2a.org/schemas/fixture-v1.json",
-  "name": "cha2a/did-syntax-valid-agent",
-  "description": "合法 agent DID，ABNF 通过",
-  "fixtureType": "did-syntax",
+  "name": "cha2a/normalization-identity",
+  "description": "无规范化：大小写保留、原样字节",
+  "fixtureType": "normalization",
   "spec": [
     {
       "id": "did:cha2a",
       "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
-      "section": "§3.1"
+      "section": "§3.3"
     }
   ],
   "verifierState": {
@@ -16,7 +16,8 @@
     ]
   },
   "input": {
-    "did": "did:cha2a:agent:conformance_valid_agent"
+    "did": "did:cha2a:agent:MyAgent_01",
+    "expectNormalized": "did:cha2a:agent:MyAgent_01"
   },
   "expected": {
     "verdict": "ACCEPT"

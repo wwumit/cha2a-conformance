@@ -12,7 +12,7 @@
   ],
   "verifierState": {
     "trustedRegistries": [
-      "did:cha2a:registry:compliancehub.cn"
+      "did:cha2a:registry:conformance-test"
     ]
   },
   "input": {

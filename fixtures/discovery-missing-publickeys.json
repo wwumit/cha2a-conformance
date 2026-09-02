@@ -12,12 +12,12 @@
   ],
   "verifierState": {
     "trustedRegistries": [
-      "did:cha2a:registry:compliancehub.cn"
+      "did:cha2a:registry:conformance-test"
     ]
   },
   "input": {
     "document": {
-      "registryDid": "did:cha2a:registry:compliancehub.cn",
+      "registryDid": "did:cha2a:registry:conformance-test",
       "version": "1.0",
       "supportedMethods": [
         "did:cha2a"

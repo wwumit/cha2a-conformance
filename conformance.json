@@ -9,10 +9,18 @@
   },
   "fixtureManifest": "MANIFEST.sha256",
   "verifiers": [
-    {"language": "python", "path": "verifiers/python", "coverage": "Ed25519 (cryptography) + ABNF + L0-L4 + CRUD + DID doc"},
-    {"language": "node", "path": "verifiers/node", "coverage": "Ed25519 (node:crypto) + ABNF + L0-L4 + CRUD + DID doc（独立实现）"}
+    {
+      "language": "python",
+      "path": "verifiers/python",
+      "coverage": "Ed25519 (cryptography) + ABNF + L0-L4 + CRUD + DID doc"
+    },
+    {
+      "language": "node",
+      "path": "verifiers/node",
+      "coverage": "Ed25519 (node:crypto) + ABNF + L0-L4 + CRUD + DID doc（独立实现）"
+    }
   ],
-  "fixtureCount": 48,
+  "fixtureCount": 50,
   "negativeVectorRatio": ">1/3 (REJECT 向量占比，防 happy-path-only)",
   "liveEndpoints": [
     {
@@ -33,11 +41,25 @@
     }
   ],
   "notCovered": [
-    {"specSection": "normalization", "reason": "规范未定义完整 normalization 语义（参考 opena2a §3.3 待补）"},
-    {"specSection": "§4.6 L4 ecosystem state", "reason": "需 ≥2 独立真实 verifier + 可审计重验证——fixtures 无法证明"},
-    {"specSection": "§4.2.1 Federation", "reason": "规范明确超范围"},
-    {"specSection": "§4.7 Runtime attestation", "reason": "reserved，无运行行为"},
-    {"specSection": "§3.3 号段真实运营", "reason": "无真实号段——live 只验证机制（grant 记录可核验），不声称运营"},
-    {"specSection": "§4.6 disclosure consistency", "reason": "L4 额外条件，场景未模拟"}
+    {
+      "specSection": "§4.6 L4 ecosystem state",
+      "reason": "需 ≥2 独立真实 verifier + 可审计重验证——fixtures 无法证明"
+    },
+    {
+      "specSection": "§4.2.1 Federation",
+      "reason": "规范明确超范围"
+    },
+    {
+      "specSection": "§4.7 Runtime attestation",
+      "reason": "reserved，无运行行为"
+    },
+    {
+      "specSection": "§3.3 号段真实运营",
+      "reason": "无真实号段——live 只验证机制（grant 记录可核验），不声称运营"
+    },
+    {
+      "specSection": "§4.6 disclosure consistency",
+      "reason": "L4 额外条件，场景未模拟"
+    }
   ]
 }

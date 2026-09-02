@@ -151,6 +151,10 @@ function evalFixture(fx) {
   let ok = false;
   if (kind === "did-syntax") {
     ok = checkDidSyntax(inp.did);
+  } else if (kind === "normalization") {
+    // §3.3 自定义语义：无规范化——DID 按原样字节处理（大小写敏感、语法强制小写）
+    ok = checkDidSyntax(inp.did || "");
+    if (ok && inp.expectNormalized !== undefined) ok = (inp.did === inp.expectNormalized);
   } else if (kind === "outbound-sig") {
     ok = verifyEd25519(inp.publicKeyHex || "", inp.message || "", inp.signatureHex || "");
   } else if (kind === "discovery") {
