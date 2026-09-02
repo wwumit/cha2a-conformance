@@ -30,13 +30,14 @@ def load_vec(role):
         return json.load(f)
 
 def fixture(name, ftype, section, input_, expected, verifier_state, desc):
-    """构造 fixture（自证格式：byte-stable + 追溯 §条款 + 三来源标注）"""
+    """构造 fixture（自证格式：byte-stable + 追溯 §条款 + 三来源标注；section 可为 str 或 list）"""
+    sections = section if isinstance(section, list) else [section]
     return {
         "$schema": "https://cha2a.org/schemas/fixture-v1.json",
         "name": f"cha2a/{name}",
         "description": desc,
         "fixtureType": ftype,
-        "spec": [{"id": "did:cha2a", "ref": SPEC_REF, "section": section}],
+        "spec": [{"id": "did:cha2a", "ref": SPEC_REF, "section": s} for s in sections],
         "verifierState": verifier_state,
         "input": input_,
         "expected": expected,
@@ -59,7 +60,7 @@ def did_syntax_fixtures():
                            {"did": did}, {"verdict": "ACCEPT"}, vs,
                            f"合法 {t} DID，ABNF 通过"))
     # 非法：大写方法名 / 空 id / 空格 / 非法字符
-    out.append(fixture("did-syntax-invalid-uppercase-method", "did-syntax", "§3.1",
+    out.append(fixture("did-syntax-invalid-uppercase-method", "did-syntax", ["§3.1", "§2"],
                        {"did": "did:CHA2A:agent:x"}, {"verdict": "REJECT"}, vs, "方法名必须小写"))
     out.append(fixture("did-syntax-invalid-empty-id", "did-syntax", "§3.1",
                        {"did": "did:cha2a:agent:"}, {"verdict": "REJECT"}, vs, "resource-id 非空"))
@@ -75,7 +76,7 @@ def normalization_fixtures():
     out = []
     vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
     # 1. case-preserving：resource-id 大写合法（GitHub 路径风格，§3.1.1 字节一致承诺）
-    out.append(fixture("norm-resource-id-uppercase-valid", "normalization", "§3.4",
+    out.append(fixture("norm-resource-id-uppercase-valid", "normalization", ["§3.4", "§3.1.1"],
                        {"did": "did:cha2a:agent:Microsoft/vscode"},
                        {"verdict": "ACCEPT"}, vs, "resource-id 大写合法（case-preserving）"))
     # 2. case-distinct：仅大小写不同 = 不同资源（大小写敏感比较，不判等价）
@@ -87,7 +88,7 @@ def normalization_fixtures():
                        {"did": "did:cha2a:agent:café"},
                        {"verdict": "REJECT"}, vs, "非 US-ASCII 字符非法"))
     # 4. scoped 包名（@ 与 /）+ 大小写共存时字节保持
-    out.append(fixture("norm-resource-id-scoped-valid", "normalization", "§3.4",
+    out.append(fixture("norm-resource-id-scoped-valid", "normalization", ["§3.4", "§3.1.1"],
                        {"did": "did:cha2a:mcp_server:@modelcontextprotocol/server-filesystem"},
                        {"verdict": "ACCEPT"}, vs, "scoped 名字节保持"))
     # 5. 解析 byte-exact：注册 Foo、解析 foo → 404（resolve 分支，不自动纠正）
@@ -156,8 +157,9 @@ def level_fixtures():
     vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"],
           "registeredVerifiers": ["did:cha2a:verifier:verifier_a",
                                   "did:cha2a:verifier:verifier_b"]}
-    def L(name, metadata, verifiedBy, exp_level, desc, revoked=False):
-        out.append(fixture(name, "level", "§4.6",
+    def L(name, metadata, verifiedBy, exp_level, desc, revoked=False, sections=None):
+        secs = sections if sections else "§4.6"
+        out.append(fixture(name, "level", secs,
                            {"metadata": metadata, "verifiedBy": verifiedBy, "revoked": revoked},
                            {"verdict": "ACCEPT", "level": exp_level}, vs, desc))
     # L0-L4
@@ -202,7 +204,7 @@ def level_fixtures():
     L("revocation-fail-closed",
       {"contentIdentity": "sha256:abc123", "author": "did:cha2a:authority:example.com",
        "publisher": "did:cha2a:publisher:market"}, vb2, 0,
-      "撤销后 fail-closed → L0", revoked=True)
+      "撤销后 fail-closed → L0", revoked=True, sections=["§4.6", "§4.4.1"])
     return out
 
 
@@ -247,7 +249,7 @@ def crud_fixtures():
                            {"type": t, "id": rid,
                             "metadata": {"name": f"new {t}", "author": "did:cha2a:authority:example.com"}},
                            {"verdict": "ACCEPT"}, vs, f"{t} 合法注册"))
-    out.append(fixture("create-invalid-type", "create", "§4.1",
+    out.append(fixture("create-invalid-type", "create", ["§4.1", "§3.2"],
                        {"type": "not_a_type", "id": "x", "metadata": {}},
                        {"verdict": "REJECT"}, vs, "未注册类型 REJECT"))
     out.append(fixture("create-duplicate", "create", "§4.1",
@@ -295,7 +297,7 @@ def did_doc_fixtures():
                      "type": "TrustLookup",
                      "serviceEndpoint": "https://registry.example.com/api/v1/trust/query"}],
     }
-    out.append(fixture("did-doc-valid", "did-doc", "§5",
+    out.append(fixture("did-doc-valid", "did-doc", ["§5", "§5.1"],
                        {"document": valid_doc}, {"verdict": "ACCEPT"}, vs, "DID 文档结构完整"))
     missing = {k: v for k, v in valid_doc.items() if k != "verificationMethod"}
     out.append(fixture("did-doc-missing-verificationMethod", "did-doc", "§5",

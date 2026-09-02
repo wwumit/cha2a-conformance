@@ -60,6 +60,14 @@
     {
       "specSection": "§4.6 disclosure consistency",
       "reason": "L4 额外条件，场景未模拟"
+    },
+    {
+      "specSection": "§6 Security Considerations",
+      "reason": "实现侧安全要求（密钥轮换 overlap、fail-closed 验证、撤销消费、防重放等）——离线协议向量无法证明，属实现核对（B 项）与 live 覆盖"
+    },
+    {
+      "specSection": "§7 Privacy Considerations",
+      "reason": "实现侧隐私要求（最小化收集、代理/DID 数据保留等）——离线协议向量无法证明，属实现核对（B 项）"
     }
   ]
 }

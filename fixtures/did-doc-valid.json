@@ -8,6 +8,11 @@
       "id": "did:cha2a",
       "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
       "section": "§5"
+    },
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§5.1"
     }
   ],
   "verifierState": {

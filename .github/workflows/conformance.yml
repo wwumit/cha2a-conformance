@@ -25,9 +25,13 @@ jobs:
         run: python3 verifiers/python/verify.py fixtures --manifest MANIFEST.sha256
       - name: Node 验证器（含 MANIFEST 内容校验）
         run: node verifiers/node/verify.mjs fixtures --manifest MANIFEST.sha256
-      - name: parity 双实现互锁
+      - name: parity 双实现互锁（L2.1：rc≠0/空 verdicts/判卷集合==实有 三条断言）
         run: python3 scripts/parity.py
       - name: MANIFEST 完整性
         run: sha256sum -c MANIFEST.sha256
       - name: 计数/JSON 防漂移（声称=实有）
         run: python3 scripts/check_consistency.py
+      - name: 跨仓版本一致性（L2.2：规范头部版本 == conformance.json spec.version）
+        run: python3 scripts/check_spec_version.py
+      - name: 规范→向量反向覆盖（L2.3：含 MUST/SHOULD 区块必须有向量或 notCovered 声明）
+        run: python3 scripts/check_spec_coverage.py
