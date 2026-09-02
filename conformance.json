@@ -20,7 +20,7 @@
       "coverage": "Ed25519 (node:crypto) + ABNF + L0-L4 + CRUD + DID doc（独立实现）"
     }
   ],
-  "fixtureCount": 50,
+  "fixtureCount": 54,
   "negativeVectorRatio": ">1/3 (REJECT 向量占比，防 happy-path-only)",
   "liveEndpoints": [
     {

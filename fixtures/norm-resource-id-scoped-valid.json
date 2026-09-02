@@ -1,13 +1,13 @@
 {
   "$schema": "https://cha2a.org/schemas/fixture-v1.json",
-  "name": "cha2a/normalization-uppercase-type",
-  "description": "类型大写非法（语法强制小写）",
+  "name": "cha2a/norm-resource-id-scoped-valid",
+  "description": "scoped 名字节保持",
   "fixtureType": "normalization",
   "spec": [
     {
       "id": "did:cha2a",
       "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
-      "section": "§3.3"
+      "section": "§3.4"
     }
   ],
   "verifierState": {
@@ -16,9 +16,9 @@
     ]
   },
   "input": {
-    "did": "did:cha2a:AGENT:foo"
+    "did": "did:cha2a:mcp_server:@modelcontextprotocol/server-filesystem"
   },
   "expected": {
-    "verdict": "REJECT"
+    "verdict": "ACCEPT"
   }
 }

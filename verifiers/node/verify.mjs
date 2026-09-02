@@ -11,7 +11,7 @@ import crypto from "node:crypto";
 
 // ---- §3.1 ABNF（独立正则实现） ----
 const TYPE_RE = /^[a-z][a-z_]*$/;                       // ALPHA-LOWER *(ALPHA-LOWER/_)
-const ID_CHAR = "A-Za-z0-9._~-";
+const ID_CHAR = "A-Za-z0-9._~@/-"; // unreserved（含 / @，规范 §3.1；- 置末防范围）
 const ID_RE = new RegExp(`^[${ID_CHAR}]+(:[${ID_CHAR}]+)*$`);
 
 function checkDidSyntax(did) {
@@ -152,9 +152,10 @@ function evalFixture(fx) {
   if (kind === "did-syntax") {
     ok = checkDidSyntax(inp.did);
   } else if (kind === "normalization") {
-    // §3.3 自定义语义：无规范化——DID 按原样字节处理（大小写敏感、语法强制小写）
+    // §3.4：case-preserving + byte-exact——前缀/类型必须小写（语法强制），id 大小写敏感
     ok = checkDidSyntax(inp.did || "");
     if (ok && inp.expectNormalized !== undefined) ok = (inp.did === inp.expectNormalized);
+    if (ok && inp.caseDistinct !== undefined) ok = (inp.did !== inp.caseDistinct);
   } else if (kind === "outbound-sig") {
     ok = verifyEd25519(inp.publicKeyHex || "", inp.message || "", inp.signatureHex || "");
   } else if (kind === "discovery") {

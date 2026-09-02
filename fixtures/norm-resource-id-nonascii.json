@@ -1,0 +1,24 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/norm-resource-id-nonascii",
+  "description": "非 US-ASCII 字符非法",
+  "fixtureType": "normalization",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§3.4"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:conformance-test"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:café"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

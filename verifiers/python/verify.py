@@ -11,7 +11,7 @@ from cryptography.exceptions import InvalidSignature
 
 # ---- §3.1 ABNF：did:cha2a: type : id [#fragment] ----
 TYPE_RE = re.compile(r"^[a-z][a-z_]*$")                    # ALPHA-LOWER *(ALPHA-LOWER/_)
-ID_CHAR = r"A-Za-z0-9._~-"                                  # unreserved
+ID_CHAR = r"A-Za-z0-9._~@/-"                                # unreserved（含 / @，规范 §3.1；- 置末防范围）
 ID_RE = re.compile(rf"^[{ID_CHAR}]+(:[{ID_CHAR}]+)*$")      # 1*(unreserved / ":")
 
 def check_did_syntax(did):
@@ -161,9 +161,10 @@ def eval_fixture(fx):
         ok, _ = check_did_syntax(inp.get("did"))
     elif kind == "normalization":
         ok, _ = check_did_syntax(inp.get("did"))
-        if ok:
-            norm = normalize_did(inp["did"])
-            ok = norm == inp.get("expectNormalized")
+        if ok and "expectNormalized" in inp:
+            ok = normalize_did(inp["did"]) == inp["expectNormalized"]
+        if ok and inp.get("caseDistinct"):
+            ok = inp["did"] != inp["caseDistinct"]
     elif kind == "outbound-sig":
         ok = verify_ed25519(inp.get("publicKeyHex", ""), inp.get("message", ""), inp.get("signatureHex", ""))
     elif kind == "discovery":

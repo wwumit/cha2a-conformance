@@ -7,7 +7,7 @@ did:cha2a 方法规范的 conformance 套件——**把规范 §8"声称有 test
 
 | 项 | 状态 |
 |---|---|
-| 离线向量 | **50 fixtures，双验证器 50/50 PASS + parity 互锁一致** |
+| 离线向量 | **54 fixtures，双验证器 54/54 PASS + parity 互锁一致** |
 | live 旧站（生产，只读）| **10/10 PASS**（规范参考实现达标）|
 | live 新站（火山，只读）| **5/8 PASS**（3 项规范-实现缺口，见 conformance.json）|
 | 负向向量占比 | >1/3（篡改/伪造/非法/边界必须 REJECT）|
@@ -34,12 +34,12 @@ bash live/live.sh --host https://compliancehub.cn --label legacy-production
 bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 ```
 
-## 覆盖矩阵（50 向量 ↔ 规范条款）
+## 覆盖矩阵（54 向量 ↔ 规范条款）
 
 | 规范条款 | 向量数 | 内容 |
 |---|---|---|
 | §3.1 ABNF 语法 | 16 | 12 类型 valid + 大写方法/空 id/空格/fragment |
-| §3.3 规范化 | 2 | 大小写敏感/原样字节（恒等）+ 类型大写非法 |
+| §3.4 Identifier normalization | 6 | resource-id 大写合法 / Foo≠foo / 非 ASCII REJECT / scoped 字节保持 / 解析大小写不匹配 404 / 类型大写 REJECT |
 | §4.5 出站签名 | 3 | Ed25519 有效/篡改/伪造 |
 | §5.2 discovery | 2 | 结构完整/缺 publicKeys |
 | §4.6 L0-L4 | 8 | L0-L4 判定 + 同一 verifier 非 L4 + 未注册 verifier 非 L4 + 撤销 fail-closed |
@@ -59,7 +59,7 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 
 ## notCovered（诚实，详见 conformance.json）
 
-- normalization：**已覆盖**（§3.3 自定义语义：大小写敏感、语法强制小写、无运行时规范化，2 个向量）
+- normalization：**已覆盖**（§3.4 Identifier normalization，方案 C case-preserving + byte-exact，6 个向量）
 - §4.6 L4 生态状态（需 ≥2 独立真实 verifier，fixtures 证明不了）
 - §4.2.1 Federation / §4.7 Runtime attestation（规范超范围/reserved）
 - §3.3 号段真实运营（无真实号段；live 只验证机制）

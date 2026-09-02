@@ -1,13 +1,13 @@
 {
   "$schema": "https://cha2a.org/schemas/fixture-v1.json",
-  "name": "cha2a/normalization-identity",
-  "description": "无规范化：大小写保留、原样字节",
+  "name": "cha2a/norm-resource-id-uppercase-valid",
+  "description": "resource-id 大写合法（case-preserving）",
   "fixtureType": "normalization",
   "spec": [
     {
       "id": "did:cha2a",
       "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
-      "section": "§3.3"
+      "section": "§3.4"
     }
   ],
   "verifierState": {
@@ -16,8 +16,7 @@
     ]
   },
   "input": {
-    "did": "did:cha2a:agent:MyAgent_01",
-    "expectNormalized": "did:cha2a:agent:MyAgent_01"
+    "did": "did:cha2a:agent:Microsoft/vscode"
   },
   "expected": {
     "verdict": "ACCEPT"

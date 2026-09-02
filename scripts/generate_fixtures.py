@@ -71,18 +71,35 @@ def did_syntax_fixtures():
 
 
 def normalization_fixtures():
-    """§3.3 规范化（自定义语义）：大小写敏感、语法强制小写、无运行时规范化"""
+    """§3.4 Identifier normalization（方案 C：case-preserving + byte-exact，见修订提案）"""
     out = []
     vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
-    # 恒等：DID 按原样字节处理（大小写保留，不做折叠/解码/默认端口等规范化）
-    out.append(fixture("normalization-identity", "normalization", "§3.3",
-                       {"did": "did:cha2a:agent:MyAgent_01",
-                        "expectNormalized": "did:cha2a:agent:MyAgent_01"},
-                       {"verdict": "ACCEPT"}, vs, "无规范化：大小写保留、原样字节"))
-    # 类型大小写由 §3.1 ABNF 强制小写——大写直接非法（不靠规范化折叠后接受）
-    out.append(fixture("normalization-uppercase-type", "normalization", "§3.3",
-                       {"did": "did:cha2a:AGENT:foo"},
-                       {"verdict": "REJECT"}, vs, "类型大写非法（语法强制小写）"))
+    # 1. case-preserving：resource-id 大写合法（GitHub 路径风格，§3.1.1 字节一致承诺）
+    out.append(fixture("norm-resource-id-uppercase-valid", "normalization", "§3.4",
+                       {"did": "did:cha2a:agent:Microsoft/vscode"},
+                       {"verdict": "ACCEPT"}, vs, "resource-id 大写合法（case-preserving）"))
+    # 2. case-distinct：仅大小写不同 = 不同资源（大小写敏感比较，不判等价）
+    out.append(fixture("norm-resource-id-case-distinct", "normalization", "§3.4",
+                       {"did": "did:cha2a:agent:Foo", "caseDistinct": "did:cha2a:agent:foo"},
+                       {"verdict": "ACCEPT"}, vs, "Foo 与 foo 是不同 DID"))
+    # 3. non-ASCII：US-ASCII 字节限定（无 Unicode 规范化）
+    out.append(fixture("norm-resource-id-nonascii", "normalization", "§3.4",
+                       {"did": "did:cha2a:agent:café"},
+                       {"verdict": "REJECT"}, vs, "非 US-ASCII 字符非法"))
+    # 4. scoped 包名（@ 与 /）+ 大小写共存时字节保持
+    out.append(fixture("norm-resource-id-scoped-valid", "normalization", "§3.4",
+                       {"did": "did:cha2a:mcp_server:@modelcontextprotocol/server-filesystem"},
+                       {"verdict": "ACCEPT"}, vs, "scoped 名字节保持"))
+    # 5. 解析 byte-exact：注册 Foo、解析 foo → 404（resolve 分支，不自动纠正）
+    vs_resolve = {"trustedRegistries": ["did:cha2a:registry:conformance-test"],
+                  "registeredResources": ["did:cha2a:agent:Foo"]}
+    out.append(fixture("norm-resolve-case-mismatch", "resolve", "§3.4",
+                       {"did": "did:cha2a:agent:foo"},
+                       {"verdict": "REJECT"}, vs_resolve, "大小写不匹配按未注册（404）处理"))
+    # 6. resource-type 大写非法（ABNF 已约束，补显式向量）
+    out.append(fixture("norm-resource-type-uppercase", "normalization", "§3.4",
+                       {"did": "did:cha2a:Agent:x"},
+                       {"verdict": "REJECT"}, vs, "resource-type 必须小写"))
     return out
 
 def outbound_sig_fixtures():

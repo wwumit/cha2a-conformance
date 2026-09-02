@@ -1,0 +1,27 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/norm-resolve-case-mismatch",
+  "description": "大小写不匹配按未注册（404）处理",
+  "fixtureType": "resolve",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§3.4"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:conformance-test"
+    ],
+    "registeredResources": [
+      "did:cha2a:agent:Foo"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:foo"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

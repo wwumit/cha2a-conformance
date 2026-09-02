@@ -1,0 +1,25 @@
+{
+  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "name": "cha2a/norm-resource-id-case-distinct",
+  "description": "Foo 与 foo 是不同 DID",
+  "fixtureType": "normalization",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§3.4"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:conformance-test"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:Foo",
+    "caseDistinct": "did:cha2a:agent:foo"
+  },
+  "expected": {
+    "verdict": "ACCEPT"
+  }
+}
