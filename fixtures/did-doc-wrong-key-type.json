@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
   "name": "cha2a/did-doc-wrong-key-type",
   "description": "密钥类型非 Ed25519 REJECT",
   "fixtureType": "did-doc",

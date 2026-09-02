@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
   "name": "cha2a/create-duplicate",
   "description": "重复注册（已存在）REJECT",
   "fixtureType": "create",

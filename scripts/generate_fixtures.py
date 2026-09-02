@@ -33,7 +33,7 @@ def fixture(name, ftype, section, input_, expected, verifier_state, desc):
     """构造 fixture（自证格式：byte-stable + 追溯 §条款 + 三来源标注；section 可为 str 或 list）"""
     sections = section if isinstance(section, list) else [section]
     return {
-        "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+        "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
         "name": f"cha2a/{name}",
         "description": desc,
         "fixtureType": ftype,

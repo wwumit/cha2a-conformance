@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
   "name": "cha2a/outbound-sig-tampered-message",
   "description": "篡改消息，签名不匹配",
   "fixtureType": "outbound-sig",

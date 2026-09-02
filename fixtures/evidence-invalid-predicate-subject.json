@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
   "name": "cha2a/evidence-invalid-predicate-subject",
   "description": "predicate 与 subject 类型不匹配 REJECT",
   "fixtureType": "evidence",

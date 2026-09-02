@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/conformance-profile-v1.json",
+  "title": "did:cha2a conformance profile",
+  "description": "conformance.json 的结构约束（A2：schema 落库，替代从未部署的 cha2a.org 死引用）",
+  "type": "object",
+  "required": ["suite", "spec", "fixtureManifest", "verifiers", "fixtureCount", "negativeVectorRatio", "notCovered"],
+  "properties": {
+    "suite": { "type": "string" },
+    "spec": { "type": "object", "required": ["id", "name", "version", "ref"],
+      "properties": { "id": {"type":"string"}, "name": {"type":"string"}, "version": {"type":"string"}, "ref": {"type":"string"} } },
+    "fixtureManifest": { "type": "string" },
+    "verifiers": { "type": "array", "items": { "type": "object", "required": ["language", "path", "coverage"] } },
+    "fixtureCount": { "type": "integer", "minimum": 0 },
+    "negativeVectorRatio": { "type": "string" },
+    "liveEndpoints": { "type": "array", "items": { "type": "object" } },
+    "notCovered": { "type": "array", "items": { "type": "object", "required": ["specSection", "reason"] } }
+  }
+}

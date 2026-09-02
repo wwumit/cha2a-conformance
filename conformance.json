@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cha2a.org/schemas/conformance-profile-v1.json",
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/conformance-profile-v1.json",
   "suite": "cha2a-conformance",
   "spec": {
     "id": "did:cha2a",

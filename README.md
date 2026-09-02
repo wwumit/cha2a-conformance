@@ -77,6 +77,13 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
   向量（fixtures spec.section）或 notCovered 声明，否则红——不允许"规范有要求但既无向量也无声明"
 - 拉取规范依赖网络（20s 超时 + 失败 exit 1，fail-closed 不放行）
 
+## schema 与命名空间（A2 澄清）
+
+- `conformance.json` / `fixtures/*.json` 的 `$schema` 指向**仓库内 `schemas/`**（raw.githubusercontent URL，
+  可解析非死链）——历史曾指向 `cha2a.org/schemas/*`（从未部署，HTTP 000，已修正）。
+- `https://cha2a.org/predicate/*`（evidence `predicateType` 的命名空间标识）是**规范约定 URI**
+  （标识符非获取 URL），随域名部署后可解析；作为标识不属死引用。
+
 ## 纪律
 
 - 所有密钥 TEST-ONLY（vectors/，标注，绝不用于生产）

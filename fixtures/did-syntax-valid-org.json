@@ -1,5 +1,5 @@
 {
-  "$schema": "https://cha2a.org/schemas/fixture-v1.json",
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
   "name": "cha2a/did-syntax-valid-org",
   "description": "合法 org DID，ABNF 通过",
   "fixtureType": "did-syntax",
