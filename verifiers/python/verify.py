@@ -115,6 +115,63 @@ def check_did_doc(doc):
             return False, "controller/publicKeyMultibase 缺失"
     return True, ""
 
+
+# ---- §4.2.1 federation trust 语义（v0.4 minimally specified） ----
+# registry/trust/{did}：本地优先；仅显式配置 peer 转发；read-only；fail-closed（不隐式发现、不编造）。
+def check_federation(inp):
+    local = bool(inp.get("localRegistered"))
+    peers = inp.get("peers") or []
+    src = inp.get("implSource", "")
+    upstream = inp.get("upstream")  # None | "ok" | "unreachable"
+    if local:
+        return src == "local", "本地命中须 source=local（本地优先）"
+    if not peers:
+        return src == "not-found", "无显式 peer 须 fail-closed not-found"
+    if src.startswith("peer:"):
+        pid = src[len("peer:"):]
+        if pid not in peers:
+            return False, f"转发到未配置 peer（{pid}）违反仅显式配置转发"
+        if upstream == "unreachable":
+            return False, "peer 不可达须 fail-closed（错误透传，不得编造）"
+        return True, f"显式转发 {pid}"
+    if src == "not-found":
+        return True, "fail-closed not-found（peer 亦未命中）"
+    if src == "error":
+        return upstream == "unreachable", "error 结果仅允许来自 peer 不可达"
+    return False, f"非法 implSource={src}"
+
+
+# ---- content-integrity 四检查（artifact attestation；§4.7 内 content-integrity 段） ----
+def _digest_norm(x):
+    x = (x or "").strip().lower()
+    for p in ("sha256-", "sha512-"):          # SRI integrity 格式（base64）
+        if x.startswith(p):
+            return x[len(p):].replace("=", "")
+    for p in ("sha256:", "sha512:"):          # hex 格式
+        if x.startswith(p):
+            return x[len(p):]
+    return x.replace("=", "")
+
+def check_verify(inp, registered_verifiers):
+    ci = inp.get("contentIdentity") or inp.get("artifactDigest") or ""
+    if not ci or not inp.get("contentHash"):
+        return False, "缺 contentIdentity/artifactDigest 或 contentHash"
+    if _digest_norm(ci) != _digest_norm(inp["contentHash"]):
+        return False, "content 指纹不匹配"
+    evs = inp.get("evidence") or []
+    registered = set(registered_verifiers or [])
+    attested = any(("content-integrity" in (e.get("predicateType") or ""))
+                   and e.get("result") == "passed"
+                   and e.get("verifier") in registered
+                   for e in evs)
+    if not attested:
+        return False, "无 content-integrity 背书（passed + verifier 已注册）"
+    if (inp.get("level") or 0) < 1:
+        return False, "level<1"
+    if inp.get("revoked"):
+        return False, "已撤销 fail-closed"
+    return True, "四检查全过"
+
 def eval_crud(fx):
     kind, inp = fx.get("fixtureType"), fx.get("input", {})
     exp = fx.get("expected", {}).get("verdict")
@@ -169,6 +226,14 @@ def eval_fixture(fx):
         ok = verify_ed25519(inp.get("publicKeyHex", ""), inp.get("message", ""), inp.get("signatureHex", ""))
     elif kind == "discovery":
         ok, _ = check_discovery(inp.get("document"))
+    elif kind == "federation":
+        ok, detail = check_federation(inp)
+        verdict = "ACCEPT" if ok else "REJECT"
+        return ("PASS" if verdict == exp else "FAIL"), verdict, f"{detail} expect={exp}"
+    elif kind == "verify":
+        ok, detail = check_verify(inp, fx.get("verifierState", {}).get("registeredVerifiers", []))
+        verdict = "ACCEPT" if ok else "REJECT"
+        return ("PASS" if verdict == exp else "FAIL"), verdict, f"{detail} expect={exp}"
     elif kind == "level":
         lv = compute_level(inp.get("metadata", {}), inp.get("verifiedBy", []),
                            fx.get("verifierState", {}).get("registeredVerifiers", []),

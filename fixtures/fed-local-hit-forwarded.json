@@ -1,0 +1,29 @@
+{
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
+  "name": "cha2a/fed-local-hit-forwarded",
+  "description": "本地已命中仍转发违反本地优先",
+  "fixtureType": "federation",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.2.1"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:conformance-test"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:known",
+    "localRegistered": true,
+    "peers": [
+      "did:cha2a:registry:peer-b"
+    ],
+    "implSource": "peer:did:cha2a:registry:peer-b"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

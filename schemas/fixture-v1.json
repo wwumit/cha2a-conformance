@@ -4,14 +4,57 @@
   "title": "did:cha2a conformance fixture",
   "description": "fixtures/*.json 的结构约束（A2：schema 落库，替代从未部署的 cha2a.org 死引用）",
   "type": "object",
-  "required": ["name", "fixtureType", "spec", "input", "expected"],
+  "required": [
+    "name",
+    "fixtureType",
+    "spec",
+    "input",
+    "expected"
+  ],
   "properties": {
-    "name": { "type": "string", "pattern": "^cha2a/" },
-    "fixtureType": { "type": "string", "enum": ["did-syntax", "normalization", "outbound-sig", "discovery", "level", "evidence", "create", "resolve", "update", "did-doc", "revocation"] },
-    "description": { "type": "string" },
-    "spec": { "type": "array", "items": { "type": "object", "required": ["id", "section"] } },
-    "verifierState": { "type": "object" },
-    "input": { "type": "object" },
-    "expected": { "type": "object" }
+    "name": {
+      "type": "string",
+      "pattern": "^cha2a/"
+    },
+    "fixtureType": {
+      "type": "string",
+      "enum": [
+        "did-syntax",
+        "normalization",
+        "outbound-sig",
+        "discovery",
+        "level",
+        "evidence",
+        "create",
+        "resolve",
+        "update",
+        "did-doc",
+        "revocation",
+        "federation",
+        "verify"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "section"
+        ]
+      }
+    },
+    "verifierState": {
+      "type": "object"
+    },
+    "input": {
+      "type": "object"
+    },
+    "expected": {
+      "type": "object"
+    }
   }
 }

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
+  "name": "cha2a/fed-miss-no-peer-fabricated",
+  "description": "无 peer 编造结果违反 fail-closed",
+  "fixtureType": "federation",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.2.1"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:conformance-test"
+    ]
+  },
+  "input": {
+    "did": "did:cha2a:agent:unknown",
+    "localRegistered": false,
+    "peers": [],
+    "implSource": "fabricated"
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

@@ -235,6 +235,97 @@ def evidence_fixtures():
     return out
 
 
+def federation_fixtures():
+    """§4.2.1 federation peer profile 语义（v0.4 minimally specified）：
+    本地优先 → 仅显式配置 peer 转发 → fail-closed（不隐式发现 peer / 不编造结果）。
+    输入描述一次 registry/trust lookup 的实现行为，verdict 判该行为是否合规（MUST 语义）。"""
+    out = []
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"]}
+    peer_b = "did:cha2a:registry:peer-b"
+
+    def F(name, inp, exp, desc):
+        out.append(fixture(name, "federation", "§4.2.1", inp, exp, vs, desc))
+
+    F("fed-local-hit-local-source",
+      {"did": "did:cha2a:agent:known", "localRegistered": True,
+       "peers": [peer_b], "implSource": "local"},
+      {"verdict": "ACCEPT"}, "本地命中本地应答（本地优先）合规")
+    F("fed-local-hit-forwarded",
+      {"did": "did:cha2a:agent:known", "localRegistered": True,
+       "peers": [peer_b], "implSource": "peer:" + peer_b},
+      {"verdict": "REJECT"}, "本地已命中仍转发违反本地优先")
+    F("fed-miss-no-peer-notfound",
+      {"did": "did:cha2a:agent:unknown", "localRegistered": False,
+       "peers": [], "implSource": "not-found"},
+      {"verdict": "ACCEPT"}, "无配置 peer → fail-closed not-found 合规")
+    F("fed-miss-no-peer-fabricated",
+      {"did": "did:cha2a:agent:unknown", "localRegistered": False,
+       "peers": [], "implSource": "fabricated"},
+      {"verdict": "REJECT"}, "无 peer 编造结果违反 fail-closed")
+    F("fed-miss-peer-forward-ok",
+      {"did": "did:cha2a:agent:remote", "localRegistered": False,
+       "peers": [peer_b], "implSource": "peer:" + peer_b, "upstream": "ok"},
+      {"verdict": "ACCEPT"}, "显式配置 peer 转发合规（read-only）")
+    F("fed-miss-peer-unknown-forward",
+      {"did": "did:cha2a:agent:remote", "localRegistered": False,
+       "peers": [peer_b], "implSource": "peer:did:cha2a:registry:peer-x"},
+      {"verdict": "REJECT"}, "转发到未配置 peer（隐式发现）禁止")
+    F("fed-miss-peer-unreachable-failclosed",
+      {"did": "did:cha2a:agent:remote", "localRegistered": False,
+       "peers": [peer_b], "implSource": "error", "upstream": "unreachable"},
+      {"verdict": "ACCEPT"}, "peer 不可达 fail-closed（错误透传）合规")
+    F("fed-miss-peer-unreachable-fabricated",
+      {"did": "did:cha2a:agent:remote", "localRegistered": False,
+       "peers": [peer_b], "implSource": "fabricated", "upstream": "unreachable"},
+      {"verdict": "REJECT"}, "peer 不可达仍编造结果违反 fail-closed")
+    return out
+
+
+def verify_fixtures():
+    """content-integrity 四检查（artifact attestation，规范正文位 §4.7 内 content-integrity 段，
+    CHANGELOG 记 v0.3 §4.6 新增）：content 指纹匹配（L1）/ 背书（content-integrity passed、
+    verifier 已注册）/ level>=1 / 撤销 fail-closed —— 任一不过整体 FAIL"""
+    out = []
+    vs = {"trustedRegistries": ["did:cha2a:registry:conformance-test"],
+          "registeredVerifiers": ["did:cha2a:verifier:verifier_a"]}
+    H = "sha256:" + "a" * 64
+    attested = [{"predicateType": "https://cha2a.org/predicate/content-integrity/v1",
+                 "verifier": "did:cha2a:verifier:verifier_a", "result": "passed",
+                 "evidenceRef": "https://evidence.example.com/ci1"}]
+
+    def V(name, inp, exp, desc):
+        out.append(fixture(name, "verify", ["§4.7", "§4.6"], inp, exp, vs, desc))
+
+    V("verify-all-pass",
+      {"contentIdentity": H, "contentHash": H, "level": 3,
+       "evidence": attested, "revoked": False},
+      {"verdict": "ACCEPT"}, "四检查全过 → PASS")
+    V("verify-fingerprint-mismatch",
+      {"contentIdentity": H, "contentHash": "sha256:" + "b" * 64, "level": 3,
+       "evidence": attested, "revoked": False},
+      {"verdict": "REJECT"}, "content 指纹不匹配 → FAIL")
+    V("verify-no-issuance-attestation",
+      {"contentIdentity": H, "contentHash": H, "level": 3,
+       "evidence": [], "revoked": False},
+      {"verdict": "REJECT"}, "无 content-integrity 背书 → FAIL")
+    V("verify-unregistered-verifier",
+      {"contentIdentity": H, "contentHash": H, "level": 3,
+       "evidence": [{"predicateType": "https://cha2a.org/predicate/content-integrity/v1",
+                     "verifier": "did:cha2a:verifier:not_registered",
+                     "result": "passed", "evidenceRef": "https://evidence.example.com/ci2"}],
+       "revoked": False},
+      {"verdict": "REJECT"}, "背书 verifier 未注册 → FAIL")
+    V("verify-level-below-1",
+      {"contentIdentity": H, "contentHash": H, "level": 0,
+       "evidence": attested, "revoked": False},
+      {"verdict": "REJECT"}, "level<1 → FAIL")
+    V("verify-revoked-failclosed",
+      {"contentIdentity": H, "contentHash": H, "level": 3,
+       "evidence": attested, "revoked": True},
+      {"verdict": "REJECT"}, "已撤销 fail-closed → FAIL")
+    return out
+
+
 def crud_fixtures():
     """§4.1 Create / §4.2 Read / §4.3 Update / §4.4 Deactivate + §5 DID 文档结构"""
     out = []
@@ -314,6 +405,7 @@ def main():
     all_fx = (did_syntax_fixtures() + normalization_fixtures()
               + outbound_sig_fixtures() + discovery_fixtures()
               + level_fixtures() + evidence_fixtures()
+              + federation_fixtures() + verify_fixtures()
               + crud_fixtures() + did_doc_fixtures())
     for fx in all_fx:
         path = os.path.join(FIX, fx["name"].split("/")[1] + ".json")

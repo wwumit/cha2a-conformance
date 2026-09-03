@@ -109,6 +109,52 @@ function checkDidDoc(doc) {
   return [true, ""];
 }
 
+// ---- §4.2.1 federation trust 语义（v0.4 minimally specified，独立实现） ----
+function checkFederation(inp) {
+  const local = Boolean(inp.localRegistered);
+  const peers = inp.peers || [];
+  const src = inp.implSource || "";
+  const upstream = inp.upstream; // undefined | "ok" | "unreachable"
+  if (local) return src === "local" ? [true, "本地命中须 source=local（本地优先）"] : [false, "本地命中须 source=local（本地优先）"];
+  if (!peers.length) return src === "not-found" ? [true, "无显式 peer 须 fail-closed not-found"] : [false, "无显式 peer 须 fail-closed not-found"];
+  if (src.startsWith("peer:")) {
+    const pid = src.slice("peer:".length);
+    if (!peers.includes(pid)) return [false, `转发到未配置 peer（${pid}）违反仅显式配置转发`];
+    if (upstream === "unreachable") return [false, "peer 不可达须 fail-closed（错误透传，不得编造）"];
+    return [true, `显式转发 ${pid}`];
+  }
+  if (src === "not-found") return [true, "fail-closed not-found（peer 亦未命中）"];
+  if (src === "error") return [upstream === "unreachable", "error 结果仅允许来自 peer 不可达"];
+  return [false, `非法 implSource=${src}`];
+}
+
+// ---- content-integrity 四检查（artifact attestation；§4.7 内 content-integrity 段，独立实现） ----
+function digestNorm(x) {
+  let s = String(x || "").trim().toLowerCase();
+  for (const p of ["sha256-", "sha512-"]) {          // SRI integrity 格式（base64）
+    if (s.startsWith(p)) return s.slice(p.length).replace(/=/g, "");
+  }
+  for (const p of ["sha256:", "sha512:"]) {          // hex 格式
+    if (s.startsWith(p)) return s.slice(p.length);
+  }
+  return s.replace(/=/g, "");
+}
+
+function checkVerify(inp, registeredVerifiers) {
+  const ci = inp.contentIdentity || inp.artifactDigest || "";
+  if (!ci || !inp.contentHash) return [false, "缺 contentIdentity/artifactDigest 或 contentHash"];
+  if (digestNorm(ci) !== digestNorm(inp.contentHash)) return [false, "content 指纹不匹配"];
+  const evs = inp.evidence || [];
+  const registered = new Set(registeredVerifiers || []);
+  const attested = evs.some(
+    (e) => String(e.predicateType || "").includes("content-integrity") &&
+      e.result === "passed" && registered.has(e.verifier));
+  if (!attested) return [false, "无 content-integrity 背书（passed + verifier 已注册）"];
+  if ((inp.level || 0) < 1) return [false, "level<1"];
+  if (inp.revoked) return [false, "已撤销 fail-closed"];
+  return [true, "四检查全过"];
+}
+
 function evalCrud(fx) {
   const kind = fx.fixtureType, inp = fx.input || {};
   const exp = (fx.expected || {}).verdict;
@@ -160,6 +206,14 @@ function evalFixture(fx) {
     ok = verifyEd25519(inp.publicKeyHex || "", inp.message || "", inp.signatureHex || "");
   } else if (kind === "discovery") {
     ok = checkDiscovery(inp.document);
+  } else if (kind === "federation") {
+    const [okF, det] = checkFederation(inp);
+    const v = okF ? "ACCEPT" : "REJECT";
+    return [v === exp ? "PASS" : "FAIL", v, `${det} expect=${exp}`];
+  } else if (kind === "verify") {
+    const [okV, det] = checkVerify(inp, (fx.verifierState || {}).registeredVerifiers || []);
+    const v = okV ? "ACCEPT" : "REJECT";
+    return [v === exp ? "PASS" : "FAIL", v, `${det} expect=${exp}`];
   } else if (kind === "level") {
     const lv = computeLevel(inp.metadata || {}, inp.verifiedBy || [],
       (fx.verifierState || {}).registeredVerifiers || [], Boolean(inp.revoked));

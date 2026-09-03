@@ -9,13 +9,13 @@ conformance 向量，或在 notCovered 显式声明理由——不允许"规范�
   4. 区块语义被向量/声明以"近似编号"覆盖的不算（如 §3.1 不覆盖 §3.1.1）——精确匹配
 任一缺失 → exit 1
 
-用法：python3 scripts/check_spec_coverage.py [--local PATH]（默认拉远程 spec-v0.2）
+用法：python3 scripts/check_spec_coverage.py [--local PATH]（默认拉远程 main）
 """
 import json, os, re, sys, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPEC_REPO = "https://raw.githubusercontent.com/wwumit/did-method-cha2a"
-SPEC_BRANCH = "spec-v0.2"
+SPEC_BRANCH = "main"
 SPEC_FILE = "did-method-cha2a.md"
 
 HEADING_RE = re.compile(r"^(#{2,4})\s+([0-9]+(?:\.[0-9]+)*)\.?\s+\S")

@@ -2,11 +2,12 @@
 """跨仓版本一致性门禁：规范仓库头部版本 == conformance.json spec.version
 
 规范与 conformance 分属两仓（did-method-cha2a / cha2a-conformance），版本各说各话
-会导致"conformance 验证的不是这份规范"。本脚本拉取规范当前开发分支（spec-v0.2），
+会导致"conformance 验证的不是这份规范"。本脚本拉取规范 main 分支（conformance spec.ref
+指向 blob/main；历史曾指向 spec-v0.2，已随 P0-2 ref 迁移更新），
 解析头部 **Version:** 字段，与 conformance.json 的 spec.version 比对（仅比版本号数字）。
 
 用法：
-  python3 scripts/check_spec_version.py                 # 拉取远程 spec-v0.2 比对
+  python3 scripts/check_spec_version.py                 # 拉取远程 main 比对
   python3 scripts/check_spec_version.py --local PATH    # 用本地规范文件比对（调试）
 任一不一致 → exit 1
 """
@@ -14,7 +15,7 @@ import json, os, re, subprocess, sys, tempfile, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPEC_REPO = "https://raw.githubusercontent.com/wwumit/did-method-cha2a"
-SPEC_BRANCH = "spec-v0.2"
+SPEC_BRANCH = "main"
 SPEC_FILE = "did-method-cha2a.md"
 
 VERSION_RE = re.compile(r"\*\*Version:\*\*\s*([0-9]+\.[0-9]+)")

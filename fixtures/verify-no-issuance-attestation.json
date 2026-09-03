@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
+  "name": "cha2a/verify-no-issuance-attestation",
+  "description": "无 content-integrity 背书 → FAIL",
+  "fixtureType": "verify",
+  "spec": [
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.7"
+    },
+    {
+      "id": "did:cha2a",
+      "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md",
+      "section": "§4.6"
+    }
+  ],
+  "verifierState": {
+    "trustedRegistries": [
+      "did:cha2a:registry:conformance-test"
+    ],
+    "registeredVerifiers": [
+      "did:cha2a:verifier:verifier_a"
+    ]
+  },
+  "input": {
+    "contentIdentity": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "level": 3,
+    "evidence": [],
+    "revoked": false
+  },
+  "expected": {
+    "verdict": "REJECT"
+  }
+}

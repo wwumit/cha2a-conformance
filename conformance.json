@@ -4,7 +4,7 @@
   "spec": {
     "id": "did:cha2a",
     "name": "did:cha2a DID Method",
-    "version": "v0.3 (unreleased)",
+    "version": "v0.4 (unreleased)",
     "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md"
   },
   "fixtureManifest": "MANIFEST.sha256",
@@ -20,7 +20,7 @@
       "coverage": "Ed25519 (node:crypto) + ABNF + L0-L4 + CRUD + DID doc（独立实现）"
     }
   ],
-  "fixtureCount": 54,
+  "fixtureCount": 68,
   "negativeVectorRatio": ">1/3 (REJECT 向量占比，防 happy-path-only)",
   "liveEndpoints": [
     {
@@ -46,14 +46,6 @@
       "reason": "需 ≥2 独立真实 verifier + 可审计重验证——fixtures 无法证明"
     },
     {
-      "specSection": "§4.2.1 Federation",
-      "reason": "规范明确超范围"
-    },
-    {
-      "specSection": "§4.7 Runtime attestation",
-      "reason": "reserved，无运行行为"
-    },
-    {
       "specSection": "§3.3 号段真实运营",
       "reason": "无真实号段——live 只验证机制（grant 记录可核验），不声称运营"
     },
@@ -68,6 +60,86 @@
     {
       "specSection": "§7 Privacy Considerations",
       "reason": "实现侧隐私要求（最小化收集、代理/DID 数据保留等）——离线协议向量无法证明，属实现核对（B 项）"
+    },
+    {
+      "specSection": "§4.2.1 federation 真实跨 registry 互操作",
+      "reason": "offline 语义（local-first/显式 peer 转发/fail-closed）已有 federation 向量；无第二真实部署，live 互操作未验证"
+    },
+    {
+      "specSection": "§4.7 runtime attestation（runtime-side，reserved）",
+      "reason": "runtime-side 无运行行为 reserved；同节 registry-side content-integrity（artifact attestation）已有 verify 向量"
+    },
+    {
+      "specSection": "§7.4 Correlation across resources",
+      "reason": "隐私实现侧（correlation 风险文档化/日志保留策略/最小化元数据）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§7.5 Federation（运营要求）",
+      "reason": "显式 relay/本地优先/仅显式 peer/fail-closed 语义与 §4.2.1 同源（已有 federation 向量覆盖 trust-lookup 面）；号码解析中继身份等运维约束属实现核对 B 项/live"
+    },
+    {
+      "specSection": "§9.3 live-endpoint conformance",
+      "reason": "由 live/ 脚本对运行中参考实现实测（§8），非离线协议向量"
+    },
+    {
+      "specSection": "§9.5 conformance assets 发布要求",
+      "reason": "对声称 conformant 的第三方实现的发布/自证要求——各实现自证；本套件为参考实现提供 assets（fixtures/verifiers 实有）"
+    },
+    {
+      "specSection": "§7.1 Public registry records",
+      "reason": "隐私实现侧（发布方最小化个人数据）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§7.2 Resolution traffic",
+      "reason": "隐私实现侧（日志敏感性与保留限制）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§7.3 Bundle download",
+      "reason": "隐私实现侧（下载日志保留/HTTPS+签名校验）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§6.8 Transparency log",
+      "reason": "实现侧安全（签名入公共透明日志）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§6.9 Registry 密钥泄露",
+      "reason": "实现侧安全（密钥撤销/轮换/incident channel）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§6.11 Post-quantum",
+      "reason": "实现侧安全（混合 PQ 公钥发布与验证策略）——离线协议向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§1.3 能力检索",
+      "reason": "MAY 端点 + SHOULD 短标签——语义指导非协议硬约束，不钉向量；端点行为由 live 实测（§8 search）"
+    },
+    {
+      "specSection": "§6.1 Registry-mediated trust",
+      "reason": "实现侧（部署方文档化 resolver 选择）——离线向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§6.2 Key rotation",
+      "reason": "实现侧安全（overlap 期/全键广告/rotationKeys）——部分已由 discovery 结构向量（publicKeys 列表）覆盖，运维语义属 B 项"
+    },
+    {
+      "specSection": "§6.3 Revocation propagation",
+      "reason": "实现侧安全（有界 TTL 传播/不缓存 4xx）——离线向量无法证明，属实现核对 B 项；fail-closed 判定面有 revocation 向量"
+    },
+    {
+      "specSection": "§6.4 Credential lifecycle",
+      "reason": "实现侧安全（吊销 TTL 传播/凭据元数据）——离线向量无法证明，属实现核对 B 项"
+    },
+    {
+      "specSection": "§6.5 Delegation-chain verification",
+      "reason": "实现侧安全（链式逐跳授权校验）——链场景未模拟，属实现核对 B 项"
+    },
+    {
+      "specSection": "§6.6 Fail-closed verification",
+      "reason": "不可达即拒的运行时语义——离线向量判定面有撤销 fail-closed 向量；网络层不可达属 live/B 项"
+    },
+    {
+      "specSection": "§6.7 Revocation checking",
+      "reason": "消费侧（UI/relay/外部验证方）展示撤销态——撤销 fail-closed 判定面已有向量；展示侧属 B 项"
     }
   ]
 }
