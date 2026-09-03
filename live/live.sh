@@ -95,6 +95,46 @@ print('  grant 记录（+86 号段）:', ok, '| 注：机制可核验，非真�
 exit(0 if ok else 1)" 2>/dev/null
 check "number-ranges 号段授权机制可核验" $?
 
+# ---- §8/§1.3 search（registry + catalog，只读）----
+R=$(curl -s -m 8 -w "\n%{http_code}" "$HOST/api/v1/search?q=dsh-phone")
+BODY=$(echo "$R" | sed '$d'); CODE=$(echo "$R" | tail -1)
+check "search HTTP 200" "$([ "$CODE" = "200" ] && echo 0 || echo 1)"
+echo "$BODY" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+ok = isinstance(d.get('registry'),list) and isinstance(d.get('catalog'),list) and d.get('count',0)>=1
+print('  registry/catalog 列表 + count:', ok)
+exit(0 if ok else 1)" 2>/dev/null
+check "search 结构（registry/catalog/count）" $?
+CODE=$(curl -s -o /dev/null -w "%{http_code}" -m 8 "$HOST/api/v1/search")
+check "search 无 q → 400" "$([ "$CODE" = "400" ] && echo 0 || echo 1)"
+
+# ---- §4.2.1/§8 registry/status（federation peer profile）----
+R=$(curl -s -m 8 -w "\n%{http_code}" "$HOST/api/v1/registry/status")
+BODY=$(echo "$R" | sed '$d'); CODE=$(echo "$R" | tail -1)
+check "registry/status HTTP 200" "$([ "$CODE" = "200" ] && echo 0 || echo 1)"
+echo "$BODY" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+ok = d.get('registryDid') and 'federation' in (d.get('capabilities') or []) and isinstance(d.get('peers'),list)
+print('  registryDid:', d.get('registryDid'), '| federation 能力:', ok)
+exit(0 if ok else 1)" 2>/dev/null
+check "registry/status 结构（registryDid/federation/peers）" $?
+
+# ---- §8 verify/artifact（content-integrity，只读判定不写库）----
+R=$(curl -s -m 8 -w "\n%{http_code}" -X POST "$HOST/api/v1/verify/artifact" \
+  -H "Content-Type: application/json" \
+  -d '{"subject":"did:cha2a:package:@wwumit/dsh-phone","contentHash":"sha512-'$(printf 'x%.0s' {1..88})'"}')
+BODY=$(echo "$R" | sed '$d'); CODE=$(echo "$R" | tail -1)
+check "verify/artifact HTTP 200" "$([ "$CODE" = "200" ] && echo 0 || echo 1)"
+echo "$BODY" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+ok = d.get('verdict') in ('PASS','FAIL') and 'basis' in d
+print('  verdict:', d.get('verdict'), '| basis 存在:', 'basis' in d, '| 注：PASS/FAIL 判定语义由离线 verify 向量钉住，live 只证端点结构化响应')
+exit(0 if ok else 1)" 2>/dev/null
+check "verify/artifact 结构（verdict+basis）" $?
+
 echo ""
 echo "=== live 汇总: $PASS PASS / $FAIL FAIL (label=$LABEL, mode=$MODE) ==="
 exit $([ "$FAIL" = "0" ] && echo 0 || echo 1)
