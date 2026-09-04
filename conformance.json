@@ -4,7 +4,7 @@
   "spec": {
     "id": "did:cha2a",
     "name": "did:cha2a DID Method",
-    "version": "v0.4 (unreleased)",
+    "version": "v1.0",
     "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md"
   },
   "fixtureManifest": "MANIFEST.sha256",
