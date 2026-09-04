@@ -49,7 +49,7 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 | §4.3 Update | 2 | 已注册/未注册 |
 | §5 DID 文档 | 3 | 结构完整/缺 verificationMethod/非 Ed25519 |
 | §4.2.1 federation（v0.4）| 8 | trust lookup 行为合规：本地优先 / 仅显式 peer 转发 / 无 peer fail-closed / peer 不可达错误透传（不编造） |
-| §4.7 content-integrity（verify，v0.4）| 6 | 四检查判定：指纹匹配 / content-integrity 背书（verifier 已注册）/ level≥1 / 撤销 fail-closed |
+| §4.7 content-integrity（verify，evidence 节）| 6 | 四检查判定：指纹匹配 / content-integrity 背书（verifier 已注册）/ level≥1 / 撤销 fail-closed |
 
 **计数由 generate_fixtures.py 输出维护——README 声称 = fixture 实有（防"声称≠实有"）。**
 
@@ -67,7 +67,7 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 - §6 Security Considerations（实现侧安全要求：密钥轮换 overlap/fail-closed 验证/撤销消费/防重放等——离线协议向量无法证明，属实现核对 B 项与 live 覆盖）
 - §7 Privacy Considerations（实现侧隐私要求——离线协议向量无法证明，属实现核对 B 项）
 - §4.2.1 federation 真实跨 registry 互操作（offline 语义已由 federation 向量覆盖；无第二真实部署，live 互操作未验证）
-- §4.7 runtime attestation runtime-side（reserved，无运行行为；同节 registry-side content-integrity 已有 verify 向量）
+- §4.8 runtime attestation runtime-side（reserved，无运行行为；registry-side content-integrity 在 §4.7 evidence 节，已有 verify 向量）
 - §7.4 Correlation across resources（隐私实现侧——属实现核对 B 项）
 - §7.5 Federation 运营要求（trust-lookup 语义与 §4.2.1 同源已有向量；号码解析中继身份等运维约束属 B 项/live）
 - §9.3 live-endpoint conformance（由 live/ 脚本对运行中参考实现实测，非离线向量）

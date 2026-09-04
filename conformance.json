@@ -66,8 +66,8 @@
       "reason": "offline 语义（local-first/显式 peer 转发/fail-closed）已有 federation 向量；无第二真实部署，live 互操作未验证"
     },
     {
-      "specSection": "§4.7 runtime attestation（runtime-side，reserved）",
-      "reason": "runtime-side 无运行行为 reserved；同节 registry-side content-integrity（artifact attestation）已有 verify 向量"
+      "specSection": "§4.8 runtime attestation（runtime-side，reserved）",
+      "reason": "runtime-side 无运行行为 reserved；registry-side content-integrity（§4.7 evidence 节）已有 verify 向量"
     },
     {
       "specSection": "§7.4 Correlation across resources",
