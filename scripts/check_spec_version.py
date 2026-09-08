@@ -18,8 +18,8 @@ SPEC_REPO = "https://raw.githubusercontent.com/wwumit/did-method-cha2a"
 SPEC_BRANCH = "main"
 SPEC_FILE = "did-method-cha2a.md"
 
-VERSION_RE = re.compile(r"\*\*Version:\*\*\s*([0-9]+\.[0-9]+)")
-CONF_VERSION_RE = re.compile(r"v?([0-9]+\.[0-9]+)")
+VERSION_RE = re.compile(r"\*\*Version:\*\*\s*v?([0-9]+\.[0-9]+\.[0-9]+)")
+CONF_VERSION_RE = re.compile(r"v?([0-9]+\.[0-9]+\.[0-9]+)")
 
 def fetch_spec_text():
     url = f"{SPEC_REPO}/{SPEC_BRANCH}/{SPEC_FILE}"

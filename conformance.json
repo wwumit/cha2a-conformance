@@ -4,7 +4,7 @@
   "spec": {
     "id": "did:cha2a",
     "name": "did:cha2a DID Method",
-    "version": "v1.0.2",
+    "version": "v1.1.0",
     "ref": "https://github.com/wwumit/did-method-cha2a/blob/main/did-method-cha2a.md"
   },
   "fixtureManifest": "MANIFEST.sha256",
@@ -25,9 +25,9 @@
   "liveEndpoints": [
     {
       "target": "legacy-production (compliancehub.cn:8787)",
-      "result": "10/10 PASS",
+      "result": "17/17 PASS",
       "mode": "readonly",
-      "note": "规范参考实现（Node）达标"
+      "note": "规范参考实现（Node）达标；2026-09-05 公网复测 17 项只读断言全 PASS"
     },
     {
       "target": "new-registry (火山 :5000)",
@@ -37,7 +37,8 @@
         "/.well-known/cha2a 未实现（规范 §5.2 discovery）",
         "number-ranges 端点未实现（规范 §3.3 号段授权机制）",
         "evidence/query 字段名 did vs 规范/旧站 subject（不一致待核对）"
-      ]
+      ],
+      "note": "火山新站目标（无入口未核）；三条 gap 在 legacy 合规机侧均已核验具备（.well-known 200 结构匹配 §5.2 / number-ranges grant 可核验 / evidence/query 顶层字段为规范一致 subject）"
     }
   ],
   "notCovered": [
@@ -46,8 +47,8 @@
       "reason": "需 ≥2 独立真实 verifier + 可审计重验证——fixtures 无法证明"
     },
     {
-      "specSection": "§3.3 号段真实运营",
-      "reason": "无真实号段——live 只验证机制（grant 记录可核验），不声称运营"
+      "specSection": "§3.3 服务附着与号段授予（存根，语义归伴随文档 agent-identity.md §6.5）",
+      "reason": "主规范只留指针；校验规则与授予 API 已移入分册——机制向量（grant 记录可核验）不变，live 不声称真实号段运营"
     },
     {
       "specSection": "§4.6 disclosure consistency",
@@ -110,16 +111,12 @@
       "reason": "实现侧安全（混合 PQ 公钥发布与验证策略）——离线协议向量无法证明，属实现核对 B 项"
     },
     {
-      "specSection": "§1.3 能力检索",
-      "reason": "MAY 端点 + SHOULD 短标签——语义指导非协议硬约束，不钉向量；端点行为由 live 实测（§8 search）"
-    },
-    {
       "specSection": "§6.1 Registry-mediated trust",
       "reason": "实现侧（部署方文档化 resolver 选择）——离线向量无法证明，属实现核对 B 项"
     },
     {
       "specSection": "§6.2 Key rotation",
-      "reason": "实现侧安全（overlap 期/全键广告/rotationKeys）——部分已由 discovery 结构向量（publicKeys 列表）覆盖，运维语义属 B 项"
+      "reason": "实现侧安全（overlap 期/全键广告/轮换状态表达）——v1.1.0 起轮换状态由 discovery 表达（publicKeys[].version/createdAt/overlap 窗口），已由 discovery 结构向量部分覆盖；运维语义属 B 项"
     },
     {
       "specSection": "§6.3 Revocation propagation",
@@ -140,6 +137,10 @@
     {
       "specSection": "§6.7 Revocation checking",
       "reason": "消费侧（UI/relay/外部验证方）展示撤销态——撤销 fail-closed 判定面已有向量；展示侧属 B 项"
+    },
+    {
+      "specSection": "§1.4 Document scope",
+      "reason": "编辑性分层声明（方法核心 vs 使用剖面、生态叙述归伴随文档）——无运行时行为，不产生可测判定面"
     }
   ]
 }

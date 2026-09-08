@@ -8,7 +8,7 @@ did:cha2a 方法规范的 conformance 套件——**把规范 §8"声称有 test
 | 项 | 状态 |
 |---|---|
 | 离线向量 | **68 fixtures（+8 §4.2.1 federation 语义、+6 §4.7 content-integrity verify），双验证器 68/68 PASS + parity 互锁一致** |
-| live 旧站（生产，只读）| **10/10 PASS**（规范参考实现达标）|
+| live 旧站（生产，只读）| **17/17 PASS**（规范参考实现达标；2026-09-05 公网复测）|
 | live 新站（火山，只读）| **5/8 PASS**（3 项规范-实现缺口，见 conformance.json）|
 | 负向向量占比 | >1/3（篡改/伪造/非法/边界必须 REJECT）|
 | 确定性 | 生成器重跑字节一致（git diff 为空）+ MANIFEST.sha256 钉住 |
@@ -38,7 +38,7 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 
 | 规范条款 | 向量数 | 内容 |
 |---|---|---|
-| §3.1 ABNF 语法 | 16 | 12 类型 valid + 大写方法/空 id/空格/fragment |
+| §3.1 ABNF 语法 | 16 | 12 类型 valid + 大写方法/空 id/空格/DID 含 fragment→REJECT（v1.1.0：fragment 属 DID URL） |
 | §3.4 Identifier normalization | 6 | resource-id 大写合法 / Foo≠foo / 非 ASCII REJECT / scoped 字节保持 / 解析大小写不匹配 404 / 类型大写 REJECT |
 | §4.5 出站签名 | 3 | Ed25519 有效/篡改/伪造 |
 | §5.2 discovery | 2 | 结构完整/缺 publicKeys |
@@ -56,13 +56,13 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 ## live 缺口（如实，来自新站 live 5/8）
 
 1. `/.well-known/cha2a`（§5.2 discovery）——新站未实现（旧站已实现）
-2. `number-ranges` 端点（§3.3 号段授权机制）——新站未实现（旧站已实现，grant 记录可核验）
+2. `number-ranges` 端点（号段授权机制，主规范 §3.3 为存根、完整语义在分册 §6.5）——新站未实现（旧站已实现，grant 记录可核验）
 3. evidence/query 返回字段 `did` vs 规范/旧站 `subject`——新旧站/规范不一致，待核对
 
 ## notCovered（诚实，详见 conformance.json；条数=25，与 conformance.json 一致）
 
 - §4.6 L4 生态状态（需 ≥2 独立真实 verifier，fixtures 证明不了）
-- §3.3 号段真实运营（无真实号段；live 只验证机制，grant 记录可核验）
+- §3.3 服务附着与号段授予（存根，校验规则与授予 API 归伴随文档 agent-identity.md §6.5；无真实号段，live 只验证机制，grant 记录可核验）
 - §4.6 disclosure consistency（L4 额外条件，场景未模拟）
 - §6 Security Considerations（实现侧安全要求：密钥轮换 overlap/fail-closed 验证/撤销消费/防重放等——离线协议向量无法证明，属实现核对 B 项与 live 覆盖）
 - §7 Privacy Considerations（实现侧隐私要求——离线协议向量无法证明，属实现核对 B 项）
@@ -78,7 +78,6 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 - §6.8 Transparency log（实现侧安全，B 项）
 - §6.9 Registry 密钥泄露（实现侧安全，B 项）
 - §6.11 Post-quantum（实现侧安全，B 项）
-- §1.3 能力检索（MAY 端点 + SHOULD 短标签，语义指导不钉向量；端点行为 live 实测）
 - §6.1 Registry-mediated trust（实现侧，B 项）
 - §6.2 Key rotation（部分由 discovery 结构向量覆盖，运维语义 B 项）
 - §6.3 Revocation propagation（fail-closed 判定面有 revocation 向量，传播运维 B 项）
@@ -86,6 +85,7 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 - §6.5 Delegation-chain verification（链场景未模拟，B 项）
 - §6.6 Fail-closed verification（判定面有撤销 fail-closed 向量；网络层不可达属 live/B 项）
 - §6.7 Revocation checking（撤销判定面已有向量；消费侧展示属 B 项）
+- §1.4 Document scope（v1.1.0 新增：编辑性分层声明——方法核心 vs 使用剖面，无运行时行为，不产生可测判定面）
 
 ## 机器强制（L2，防"可被误读为绿"的路径）
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/wwumit/cha2a-conformance/main/schemas/fixture-v1.json",
   "name": "cha2a/did-syntax-fragment",
-  "description": "fragment 合法",
+  "description": "DID 含 fragment → REJECT（fragment 属 DID URL，v1.1.0 §3.1）",
   "fixtureType": "did-syntax",
   "spec": [
     {
@@ -19,6 +19,6 @@
     "did": "did:cha2a:agent:x#key-1"
   },
   "expected": {
-    "verdict": "ACCEPT"
+    "verdict": "REJECT"
   }
 }

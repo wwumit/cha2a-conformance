@@ -9,7 +9,7 @@ import json, os, re, sys, hashlib
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from cryptography.exceptions import InvalidSignature
 
-# ---- §3.1 ABNF：did:cha2a: type : id [#fragment] ----
+# ---- §3.1 ABNF（v1.1.0）：did:cha2a: type : id —— fragment 属 DID URL，不属于 DID ----
 TYPE_RE = re.compile(r"^[a-z][a-z_]*$")                    # ALPHA-LOWER *(ALPHA-LOWER/_)
 ID_CHAR = r"A-Za-z0-9._~@/-"                                # unreserved（含 / @，规范 §3.1；- 置末防范围）
 ID_RE = re.compile(rf"^[{ID_CHAR}]+(:[{ID_CHAR}]+)*$")      # 1*(unreserved / ":")
@@ -19,9 +19,7 @@ def check_did_syntax(did):
         return False, "method 前缀"
     rest = did[len("did:cha2a:"):]
     if "#" in rest:
-        rest, frag = rest.split("#", 1)
-        if not re.match(rf"^[{ID_CHAR}]+$", frag):
-            return False, "fragment"
+        return False, "fragment 不属于 DID（v1.1.0 §3.1：fragment 属 DID URL）"
     parts = rest.split(":", 1)
     if len(parts) != 2 or not parts[0] or not parts[1]:
         return False, "缺 type:id"

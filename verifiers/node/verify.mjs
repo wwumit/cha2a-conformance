@@ -9,7 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 
-// ---- §3.1 ABNF（独立正则实现） ----
+// ---- §3.1 ABNF（v1.1.0，独立正则实现）：did:cha2a: type : id —— fragment 属 DID URL，不属于 DID ----
 const TYPE_RE = /^[a-z][a-z_]*$/;                       // ALPHA-LOWER *(ALPHA-LOWER/_)
 const ID_CHAR = "A-Za-z0-9._~@/-"; // unreserved（含 / @，规范 §3.1；- 置末防范围）
 const ID_RE = new RegExp(`^[${ID_CHAR}]+(:[${ID_CHAR}]+)*$`);
@@ -17,11 +17,7 @@ const ID_RE = new RegExp(`^[${ID_CHAR}]+(:[${ID_CHAR}]+)*$`);
 function checkDidSyntax(did) {
   if (typeof did !== "string" || !did.startsWith("did:cha2a:")) return false;
   let rest = did.slice("did:cha2a:".length);
-  if (rest.includes("#")) {
-    const [r, frag] = rest.split("#", 2);
-    if (!new RegExp(`^[${ID_CHAR}]+$`).test(frag)) return false;
-    rest = r;
-  }
+  if (rest.includes("#")) return false; // v1.1.0 §3.1：fragment 属 DID URL，裸 DID 含 fragment → 非法
   const parts = rest.split(":");
   if (parts.length < 2) return false;
   const t = parts[0], rid = parts.slice(1).join(":");

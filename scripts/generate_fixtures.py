@@ -67,7 +67,7 @@ def did_syntax_fixtures():
     out.append(fixture("did-syntax-invalid-space", "did-syntax", "§3.1",
                        {"did": "did:cha2a:agent:a b"}, {"verdict": "REJECT"}, vs, "含空格非法"))
     out.append(fixture("did-syntax-fragment", "did-syntax", "§3.1",
-                       {"did": "did:cha2a:agent:x#key-1"}, {"verdict": "ACCEPT"}, vs, "fragment 合法"))
+                       {"did": "did:cha2a:agent:x#key-1"}, {"verdict": "REJECT"}, vs, "DID 含 fragment → REJECT（fragment 属 DID URL，v1.1.0 §3.1）"))
     return out
 
 
