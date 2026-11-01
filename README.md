@@ -3,7 +3,7 @@
 did:cha2a 方法规范的 conformance 套件——**把规范 §8"声称有 test vectors"变成"实有"**。
 独立自证体系：byte-stable 测试向量 + 双实现（Python/Node）独立判卷互锁 + MANIFEST 字节钉住 + CI 防漂移；向量逐条追溯规范条款（§x.y），负向向量占比 >1/3。
 
-## 状态（2026-09-03 更新）
+## 状态（2026-11-01 更新）
 
 | 项 | 状态 |
 |---|---|
@@ -36,7 +36,7 @@ bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 
 ### Registry / Passport / Agent Card profile suite
 
-独立于 68 条 did:cha2a 方法向量，`registry-agent-card/` 另含 15 条 L4 剖面向量：
+独立于 68 条 did:cha2a 方法向量，`registry-agent-card/` 另含 16 条 L4 剖面向量：
 
 ```bash
 python3 registry-agent-card/verify.py registry-agent-card \
@@ -47,7 +47,7 @@ python3 registry-agent-card/parity.py
 ```
 
 覆盖 Registry 状态归一化、unknown 不转 active、Agent Card 扩展正负例、
-EdDSA Card 签名与篡改、Card/Passport/DID 绑定、peer revoked 与不可达 fail-closed。该套件保持独立，
+EdDSA Card 签名与篡改、`#registry-key` 拒绝、Card/Passport/DID 绑定、peer revoked 与不可达 fail-closed。该套件保持独立，
 不计入下方 68 条方法向量覆盖矩阵。
 
 ## 覆盖矩阵（68 向量 ↔ 规范条款）

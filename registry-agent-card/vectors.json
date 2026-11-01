@@ -160,6 +160,46 @@
     "expected": {"verdict": "REJECT"}
   },
   {
+    "name": "card-signature-registry-key-rejected",
+    "fixtureType": "card-signature",
+    "input": {
+      "card": {
+        "name": "Registry-signed Agent",
+        "description": "This must not count as subject-held identity",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:signed",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI3JlZ2lzdHJ5LWtleSJ9",
+            "signature": "uwpC3MKnxJYY6RJr4qDtgD1Ki0_UHiB0Pss3MHLlR-mAqRpEvrhP66sJyM-c1fisrISsYmAXTHZZHdYEqIwBBQ"
+          }
+        ]
+      },
+      "publicKeys": {
+        "did:cha2a:agent:signed#registry-key": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "GFOlk9EcgdnzS6RFUSp5Pu8idPMnb52d8AFMzKlhTuI"
+        }
+      }
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
     "name": "registry-active-adapter-time",
     "fixtureType": "registry",
     "input": {

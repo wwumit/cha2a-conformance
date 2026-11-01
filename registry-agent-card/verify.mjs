@@ -74,6 +74,7 @@ function checkCardSignature(card, publicKeys) {
     try {
       const header = JSON.parse(Buffer.from(signature.protected, "base64url").toString("utf8"));
       if (header.alg !== "EdDSA") continue;
+      if (typeof header.kid !== "string" || !header.kid.endsWith("#agent-key")) continue;
       const jwk = publicKeys && publicKeys[header.kid];
       if (!jwk || jwk.kty !== "OKP" || jwk.crv !== "Ed25519") continue;
       const publicKey = crypto.createPublicKey({ key: jwk, format: "jwk" });
