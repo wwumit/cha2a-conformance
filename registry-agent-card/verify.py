@@ -120,6 +120,8 @@ def check_card_signature(card, public_keys):
             if header.get("alg") != "EdDSA":
                 continue
             kid = header.get("kid")
+            if not isinstance(kid, str) or not kid.endswith("#agent-key"):
+                continue
             jwk = public_keys.get(kid) if isinstance(public_keys, dict) else None
             if not isinstance(jwk, dict) or jwk.get("kty") != "OKP" or jwk.get("crv") != "Ed25519":
                 continue

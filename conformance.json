@@ -26,7 +26,7 @@
       "id": "registry-agent-card",
       "version": "v0.1",
       "path": "registry-agent-card",
-      "vectorCount": 15,
+      "vectorCount": 16,
       "verifiers": [
         "registry-agent-card/verify.py",
         "registry-agent-card/verify.mjs"
