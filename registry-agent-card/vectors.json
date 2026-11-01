@@ -1,0 +1,310 @@
+[
+  {
+    "name": "card-valid",
+    "fixtureType": "agent-card",
+    "input": {
+      "card": {
+        "name": "Example",
+        "description": "Example card",
+        "version": "1.0.0",
+        "supported_interfaces": [{"url": "https://agent.example/a2a"}],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:example",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": {"verdict": "ACCEPT"}
+  },
+  {
+    "name": "card-dynamic-trust",
+    "fixtureType": "agent-card",
+    "input": {
+      "card": {
+        "name": "Example",
+        "description": "Example card",
+        "version": "1.0.0",
+        "supported_interfaces": [{"url": "https://agent.example/a2a"}],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:example",
+                "registry_did": "did:cha2a:registry:example.org",
+                "trust_level": "L4"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "card-invalid-digest",
+    "fixtureType": "agent-card",
+    "input": {
+      "card": {
+        "name": "Example",
+        "description": "Example card",
+        "version": "1.0.0",
+        "supported_interfaces": [{"url": "https://agent.example/a2a"}],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:example",
+                "registry_did": "did:cha2a:registry:example.org",
+                "passport": {
+                  "uri": "https://agent.example/passport",
+                  "digest": "sha256:short"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "card-signature-valid",
+    "fixtureType": "card-signature",
+    "input": {
+      "card": {
+        "name": "Signed Agent",
+        "description": "Signed card vector",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:signed",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI2FnZW50LWtleSJ9",
+            "signature": "Yh083HaI4q9a5aONFzb5WtT9DPPZIgeo4IeyJ5m25LcKQakuHj4ncoDztx3sZ_vuCiCB_LrAG7nfMv6tfSdhCQ"
+          }
+        ]
+      },
+      "publicKeys": {
+        "did:cha2a:agent:signed#agent-key": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "GFOlk9EcgdnzS6RFUSp5Pu8idPMnb52d8AFMzKlhTuI"
+        }
+      }
+    },
+    "expected": {"verdict": "ACCEPT"}
+  },
+  {
+    "name": "card-signature-tampered",
+    "fixtureType": "card-signature",
+    "input": {
+      "card": {
+        "name": "Signed Agent",
+        "description": "Tampered after signing",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:signed",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI2FnZW50LWtleSJ9",
+            "signature": "Yh083HaI4q9a5aONFzb5WtT9DPPZIgeo4IeyJ5m25LcKQakuHj4ncoDztx3sZ_vuCiCB_LrAG7nfMv6tfSdhCQ"
+          }
+        ]
+      },
+      "publicKeys": {
+        "did:cha2a:agent:signed#agent-key": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "GFOlk9EcgdnzS6RFUSp5Pu8idPMnb52d8AFMzKlhTuI"
+        }
+      }
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "registry-active-adapter-time",
+    "fixtureType": "registry",
+    "input": {
+      "raw": {
+        "did": "did:cha2a:agent:example",
+        "registered": true,
+        "active": true,
+        "revoked": false,
+        "level": 2
+      }
+    },
+    "expected": {
+      "verdict": "ACCEPT",
+      "state": "active",
+      "timeBasis": "adapter-observation"
+    }
+  },
+  {
+    "name": "registry-unknown-not-active",
+    "fixtureType": "registry",
+    "input": {
+      "raw": {
+        "did": "did:cha2a:agent:example",
+        "registered": true,
+        "active": false,
+        "revoked": false
+      }
+    },
+    "expected": {
+      "verdict": "ACCEPT",
+      "state": "unknown",
+      "timeBasis": "adapter-observation"
+    }
+  },
+  {
+    "name": "registry-revoked",
+    "fixtureType": "registry",
+    "input": {
+      "raw": {
+        "did": "did:cha2a:agent:example",
+        "registered": true,
+        "active": false,
+        "revoked": true
+      }
+    },
+    "expected": {
+      "verdict": "ACCEPT",
+      "state": "revoked",
+      "timeBasis": "adapter-observation"
+    }
+  },
+  {
+    "name": "identity-chain-valid",
+    "fixtureType": "identity-chain",
+    "input": {
+      "agentDid": "did:cha2a:agent:example",
+      "passportSubject": "did:cha2a:agent:example",
+      "cardRegistryDid": "did:cha2a:registry:example.org",
+      "statusRegistryDid": "did:cha2a:registry:example.org",
+      "digestExpected": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digestActual": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "statusState": "active"
+    },
+    "expected": {"verdict": "ACCEPT"}
+  },
+  {
+    "name": "identity-chain-subject-mismatch",
+    "fixtureType": "identity-chain",
+    "input": {
+      "agentDid": "did:cha2a:agent:example",
+      "passportSubject": "did:cha2a:agent:other",
+      "cardRegistryDid": "did:cha2a:registry:example.org",
+      "statusRegistryDid": "did:cha2a:registry:example.org",
+      "digestExpected": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digestActual": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "statusState": "active"
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "identity-chain-digest-mismatch",
+    "fixtureType": "identity-chain",
+    "input": {
+      "agentDid": "did:cha2a:agent:example",
+      "passportSubject": "did:cha2a:agent:example",
+      "cardRegistryDid": "did:cha2a:registry:example.org",
+      "statusRegistryDid": "did:cha2a:registry:example.org",
+      "digestExpected": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digestActual": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "statusState": "active"
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "identity-chain-revoked",
+    "fixtureType": "identity-chain",
+    "input": {
+      "agentDid": "did:cha2a:agent:example",
+      "passportSubject": "did:cha2a:agent:example",
+      "cardRegistryDid": "did:cha2a:registry:example.org",
+      "statusRegistryDid": "did:cha2a:registry:example.org",
+      "digestExpected": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "digestActual": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "statusState": "revoked"
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "federation-peer-revoked",
+    "fixtureType": "federation",
+    "input": {
+      "localRegistered": false,
+      "peers": ["beta"],
+      "source": "peer:beta",
+      "upstream": "ok",
+      "state": "revoked"
+    },
+    "expected": {
+      "verdict": "ACCEPT",
+      "source": "peer:beta",
+      "state": "revoked"
+    }
+  },
+  {
+    "name": "federation-peer-unreachable",
+    "fixtureType": "federation",
+    "input": {
+      "localRegistered": false,
+      "peers": ["beta"],
+      "source": "peer:beta",
+      "upstream": "unreachable",
+      "state": "unknown"
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "federation-implicit-peer",
+    "fixtureType": "federation",
+    "input": {
+      "localRegistered": false,
+      "peers": ["beta"],
+      "source": "peer:gamma",
+      "upstream": "ok",
+      "state": "active"
+    },
+    "expected": {"verdict": "REJECT"}
+  }
+]

@@ -35,3 +35,12 @@ jobs:
         run: python3 scripts/check_spec_version.py
       - name: 规范→向量反向覆盖（L2.3：含 MUST/SHOULD 区块必须有向量或 notCovered 声明）
         run: python3 scripts/check_spec_coverage.py
+      - name: Registry/Passport/Agent Card Python verifier
+        run: python3 registry-agent-card/verify.py registry-agent-card --manifest registry-agent-card/MANIFEST.sha256
+      - name: Registry/Passport/Agent Card Node verifier
+        run: node registry-agent-card/verify.mjs registry-agent-card --manifest registry-agent-card/MANIFEST.sha256
+      - name: Registry/Passport/Agent Card parity
+        run: python3 registry-agent-card/parity.py
+      - name: Registry/Passport/Agent Card MANIFEST
+        working-directory: registry-agent-card
+        run: sha256sum -c MANIFEST.sha256

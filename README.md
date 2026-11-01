@@ -34,6 +34,22 @@ bash live/live.sh --host https://compliancehub.cn --label legacy-production
 bash live/live-new.sh --host http://127.0.0.1:5000   # 火山本机
 ```
 
+### Registry / Passport / Agent Card profile suite
+
+独立于 68 条 did:cha2a 方法向量，`registry-agent-card/` 另含 15 条 L4 剖面向量：
+
+```bash
+python3 registry-agent-card/verify.py registry-agent-card \
+  --manifest registry-agent-card/MANIFEST.sha256
+node registry-agent-card/verify.mjs registry-agent-card \
+  --manifest registry-agent-card/MANIFEST.sha256
+python3 registry-agent-card/parity.py
+```
+
+覆盖 Registry 状态归一化、unknown 不转 active、Agent Card 扩展正负例、
+EdDSA Card 签名与篡改、Card/Passport/DID 绑定、peer revoked 与不可达 fail-closed。该套件保持独立，
+不计入下方 68 条方法向量覆盖矩阵。
+
 ## 覆盖矩阵（68 向量 ↔ 规范条款）
 
 | 规范条款 | 向量数 | 内容 |
