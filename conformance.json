@@ -21,6 +21,19 @@
     }
   ],
   "fixtureCount": 68,
+  "profileSuites": [
+    {
+      "id": "registry-agent-card",
+      "version": "v0.1",
+      "path": "registry-agent-card",
+      "vectorCount": 13,
+      "verifiers": [
+        "registry-agent-card/verify.py",
+        "registry-agent-card/verify.mjs"
+      ],
+      "note": "Independent L4 profile suite; not counted in the 68 did:cha2a method fixtures."
+    }
+  ],
   "negativeVectorRatio": ">1/3 (REJECT 向量占比，防 happy-path-only)",
   "liveEndpoints": [
     {
