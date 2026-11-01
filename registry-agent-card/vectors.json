@@ -80,6 +80,67 @@
     "expected": {"verdict": "REJECT"}
   },
   {
+    "name": "card-passport-digest-required",
+    "fixtureType": "agent-card",
+    "input": {
+      "card": {
+        "name": "Missing Passport Digest",
+        "description": "A Passport reference must preserve artifact binding",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:example",
+                "registry_did": "did:cha2a:registry:example.org",
+                "passport": {
+                  "uri": "https://agent.example/passport"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
+    "name": "card-cross-origin-passport",
+    "fixtureType": "agent-card",
+    "input": {
+      "card": {
+        "name": "Cross-origin Passport",
+        "description": "Passport hosting does not establish identity",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:example",
+                "registry_did": "did:cha2a:registry:example.org",
+                "passport": {
+                  "uri": "https://passports.example/agent.json",
+                  "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "expected": {"verdict": "ACCEPT"}
+  },
+  {
     "name": "card-signature-valid",
     "fixtureType": "card-signature",
     "input": {
@@ -103,6 +164,50 @@
           ]
         },
         "signatures": [
+          {
+            "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI2FnZW50LWtleSJ9",
+            "signature": "Yh083HaI4q9a5aONFzb5WtT9DPPZIgeo4IeyJ5m25LcKQakuHj4ncoDztx3sZ_vuCiCB_LrAG7nfMv6tfSdhCQ"
+          }
+        ]
+      },
+      "publicKeys": {
+        "did:cha2a:agent:signed#agent-key": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "GFOlk9EcgdnzS6RFUSp5Pu8idPMnb52d8AFMzKlhTuI"
+        }
+      }
+    },
+    "expected": {"verdict": "ACCEPT"}
+  },
+  {
+    "name": "card-signature-multiple-valid",
+    "fixtureType": "card-signature",
+    "input": {
+      "card": {
+        "name": "Signed Agent",
+        "description": "Signed card vector",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:signed",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "protected": "bad",
+            "signature": "bad"
+          },
           {
             "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI2FnZW50LWtleSJ9",
             "signature": "Yh083HaI4q9a5aONFzb5WtT9DPPZIgeo4IeyJ5m25LcKQakuHj4ncoDztx3sZ_vuCiCB_LrAG7nfMv6tfSdhCQ"
@@ -215,6 +320,22 @@
       "verdict": "ACCEPT",
       "state": "active",
       "timeBasis": "adapter-observation"
+    }
+  },
+  {
+    "name": "registry-active-source-time",
+    "fixtureType": "registry",
+    "input": {
+      "raw": {
+        "did": "did:cha2a:agent:example",
+        "state": "active",
+        "observedAt": "2026-11-01T10:00:00Z"
+      }
+    },
+    "expected": {
+      "verdict": "ACCEPT",
+      "state": "active",
+      "timeBasis": "source"
     }
   },
   {

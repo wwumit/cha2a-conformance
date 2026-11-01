@@ -11,17 +11,21 @@ This suite tests the L4 profiles:
 
 ## Vectors
 
-`vectors.json` contains 16 cases:
+`vectors.json` contains 20 cases:
 
 - Agent Card positive and negative validation;
 - Agent Card EdDSA signature and tamper rejection;
+- multiple signatures with one valid subject key;
 - Registry-controlled `#registry-key` rejection for subject-held Card identity;
+- cross-origin Passport reference without same-origin restriction;
+- required Passport digest rejection when absent;
 - active, unknown and revoked Registry observations;
+- Registry source time versus adapter observation time;
 - Card/Passport subject, digest and Registry DID binding;
 - explicit peer revocation;
 - unavailable peer and implicit peer rejection.
 
-Nine cases are rejection cases.
+Ten cases are rejection cases.
 
 ## Run
 
