@@ -64,7 +64,7 @@ def check_card(card):
             return False, "unknown-passport-field"
         if not absolute_http(passport.get("uri")):
             return False, "passport-uri"
-        if passport.get("digest") is not None and not SHA256_URI.fullmatch(
+        if not isinstance(passport.get("digest"), str) or not SHA256_URI.fullmatch(
             passport["digest"]
         ):
             return False, "passport-digest"

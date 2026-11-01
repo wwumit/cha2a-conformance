@@ -41,7 +41,7 @@ function checkCard(card) {
       return [false, "unknown-passport-field"];
     }
     if (!absoluteHttp(passport.uri)) return [false, "passport-uri"];
-    if (passport.digest !== undefined && !SHA256_URI.test(passport.digest)) return [false, "passport-digest"];
+    if (typeof passport.digest !== "string" || !SHA256_URI.test(passport.digest)) return [false, "passport-digest"];
     if (passport.media_type !== undefined && passport.media_type !== "application/vnd.cha2a.passport+json") {
       return [false, "passport-media-type"];
     }
