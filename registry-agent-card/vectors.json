@@ -80,6 +80,86 @@
     "expected": {"verdict": "REJECT"}
   },
   {
+    "name": "card-signature-valid",
+    "fixtureType": "card-signature",
+    "input": {
+      "card": {
+        "name": "Signed Agent",
+        "description": "Signed card vector",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:signed",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI2FnZW50LWtleSJ9",
+            "signature": "Yh083HaI4q9a5aONFzb5WtT9DPPZIgeo4IeyJ5m25LcKQakuHj4ncoDztx3sZ_vuCiCB_LrAG7nfMv6tfSdhCQ"
+          }
+        ]
+      },
+      "publicKeys": {
+        "did:cha2a:agent:signed#agent-key": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "GFOlk9EcgdnzS6RFUSp5Pu8idPMnb52d8AFMzKlhTuI"
+        }
+      }
+    },
+    "expected": {"verdict": "ACCEPT"}
+  },
+  {
+    "name": "card-signature-tampered",
+    "fixtureType": "card-signature",
+    "input": {
+      "card": {
+        "name": "Signed Agent",
+        "description": "Tampered after signing",
+        "version": "1.0.0",
+        "supported_interfaces": [
+          {"url": "https://agent.example/a2a"}
+        ],
+        "capabilities": {
+          "extensions": [
+            {
+              "uri": "urn:cha2a:ext:agent-identity:v1",
+              "required": true,
+              "params": {
+                "agent_did": "did:cha2a:agent:signed",
+                "registry_did": "did:cha2a:registry:example.org"
+              }
+            }
+          ]
+        },
+        "signatures": [
+          {
+            "protected": "eyJhbGciOiJFZERTQSIsInR5cCI6IkpPU0UiLCJraWQiOiJkaWQ6Y2hhMmE6YWdlbnQ6c2lnbmVkI2FnZW50LWtleSJ9",
+            "signature": "Yh083HaI4q9a5aONFzb5WtT9DPPZIgeo4IeyJ5m25LcKQakuHj4ncoDztx3sZ_vuCiCB_LrAG7nfMv6tfSdhCQ"
+          }
+        ]
+      },
+      "publicKeys": {
+        "did:cha2a:agent:signed#agent-key": {
+          "kty": "OKP",
+          "crv": "Ed25519",
+          "x": "GFOlk9EcgdnzS6RFUSp5Pu8idPMnb52d8AFMzKlhTuI"
+        }
+      }
+    },
+    "expected": {"verdict": "REJECT"}
+  },
+  {
     "name": "registry-active-adapter-time",
     "fixtureType": "registry",
     "input": {

@@ -49,6 +49,48 @@ function checkCard(card) {
   return [true, "valid"];
 }
 
+function canonicalJson(value) {
+  if (Array.isArray(value)) return "[" + value.map(canonicalJson).join(",") + "]";
+  if (value && typeof value === "object") {
+    return "{" + Object.keys(value).sort().map(
+      (key) => JSON.stringify(key) + ":" + canonicalJson(value[key]),
+    ).join(",") + "}";
+  }
+  return JSON.stringify(value);
+}
+
+function b64urlEncode(value) {
+  return Buffer.from(value).toString("base64url");
+}
+
+function checkCardSignature(card, publicKeys) {
+  const signatures = card && Array.isArray(card.signatures) ? card.signatures : [];
+  if (!signatures.length) return [false, "signature_missing"];
+  const unsigned = { ...card };
+  delete unsigned.signatures;
+  const payload = b64urlEncode(canonicalJson(unsigned));
+  for (const signature of signatures) {
+    if (!signature || typeof signature !== "object") continue;
+    try {
+      const header = JSON.parse(Buffer.from(signature.protected, "base64url").toString("utf8"));
+      if (header.alg !== "EdDSA") continue;
+      const jwk = publicKeys && publicKeys[header.kid];
+      if (!jwk || jwk.kty !== "OKP" || jwk.crv !== "Ed25519") continue;
+      const publicKey = crypto.createPublicKey({ key: jwk, format: "jwk" });
+      const ok = crypto.verify(
+        null,
+        Buffer.from(signature.protected + "." + payload, "ascii"),
+        publicKey,
+        Buffer.from(signature.signature, "base64url"),
+      );
+      if (ok) return [true, "valid"];
+    } catch {
+      continue;
+    }
+  }
+  return [false, "signature_invalid"];
+}
+
 function normalizeRegistry(raw) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
     return { state: "unknown", timeBasis: "adapter-observation" };
@@ -68,6 +110,10 @@ function evaluate(item) {
   const value = item.input || {};
   if (item.fixtureType === "agent-card") {
     const [ok, detail] = checkCard(value.card);
+    return [ok ? "ACCEPT" : "REJECT", { detail }];
+  }
+  if (item.fixtureType === "card-signature") {
+    const [ok, detail] = checkCardSignature(value.card, value.publicKeys || {});
     return [ok ? "ACCEPT" : "REJECT", { detail }];
   }
   if (item.fixtureType === "registry") {

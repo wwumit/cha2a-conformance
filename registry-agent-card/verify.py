@@ -2,10 +2,13 @@
 """Python verifier for Registry/Passport/Agent Card profile vectors."""
 
 import argparse
+import base64
 import hashlib
 import json
 import re
 from pathlib import Path
+
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 
 IDENTITY_EXTENSION = "urn:cha2a:ext:agent-identity:v1"
@@ -73,6 +76,66 @@ def check_card(card):
     return True, "valid"
 
 
+def canonical_json(value):
+    if isinstance(value, dict):
+        return (
+            "{"
+            + ",".join(
+                json.dumps(key, ensure_ascii=False, separators=(",", ":"))
+                + ":"
+                + canonical_json(value[key])
+                for key in sorted(value)
+            )
+            + "}"
+        )
+    if isinstance(value, list):
+        return "[" + ",".join(canonical_json(item) for item in value) + "]"
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
+
+def b64url_encode(value):
+    return base64.urlsafe_b64encode(value).rstrip(b"=").decode("ascii")
+
+
+def b64url_decode(value):
+    return base64.urlsafe_b64decode(value + "=" * (-len(value) % 4))
+
+
+def check_card_signature(card, public_keys):
+    signatures = card.get("signatures") if isinstance(card, dict) else None
+    if not isinstance(signatures, list) or not signatures:
+        return False, "signature_missing"
+    unsigned = dict(card)
+    unsigned.pop("signatures", None)
+    payload = b64url_encode(canonical_json(unsigned).encode("utf-8"))
+    for signature in signatures:
+        if not isinstance(signature, dict):
+            continue
+        protected = signature.get("protected")
+        signature_value = signature.get("signature")
+        if not isinstance(protected, str) or not isinstance(signature_value, str):
+            continue
+        try:
+            header = json.loads(b64url_decode(protected).decode("utf-8"))
+            if header.get("alg") != "EdDSA":
+                continue
+            kid = header.get("kid")
+            jwk = public_keys.get(kid) if isinstance(public_keys, dict) else None
+            if not isinstance(jwk, dict) or jwk.get("kty") != "OKP" or jwk.get("crv") != "Ed25519":
+                continue
+            public_key = Ed25519PublicKey.from_public_bytes(
+                b64url_decode(jwk.get("x", ""))
+            )
+            public_key.verify(
+                b64url_decode(signature_value),
+                (protected + "." + payload).encode("ascii"),
+            )
+            return True, "valid"
+        except Exception:
+            continue
+    return False, "signature_invalid"
+
+
 def normalize_registry(raw):
     if not isinstance(raw, dict):
         return {"state": "unknown", "timeBasis": "adapter-observation"}
@@ -95,6 +158,12 @@ def evaluate(case):
     value = case.get("input", {})
     if kind == "agent-card":
         ok, detail = check_card(value.get("card"))
+        return ("ACCEPT" if ok else "REJECT"), {"detail": detail}
+    if kind == "card-signature":
+        ok, detail = check_card_signature(
+            value.get("card"),
+            value.get("publicKeys", {}),
+        )
         return ("ACCEPT" if ok else "REJECT"), {"detail": detail}
     if kind == "registry":
         result = normalize_registry(value.get("raw"))
